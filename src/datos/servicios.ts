@@ -1,6 +1,6 @@
 /**
  * servicios.ts
- * Los siete servicios de JAPH. Alimentan la órbita de la portada, el carril
+ * Los siete servicios de JAPH. Alimentan el índice de la portada, el carril
  * de /servicios y el <select> del formulario de contacto.
  *
  * IMPORTANTE: cada `id` debe existir en el enum SERVICIOS de

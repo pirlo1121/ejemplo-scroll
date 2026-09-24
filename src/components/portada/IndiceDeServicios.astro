@@ -1,0 +1,307 @@
+---
+/**
+ * Capítulo 3 · Siete capacidades — "índice".
+ *
+ * Los siete servicios como un índice tipográfico que se recorre con el
+ * scroll normal de la página: la sección no se fija ni alarga el recorrido.
+ * scripts/historia/indice.ts enciende la fila que cruza el centro de la
+ * pantalla (o la que tiene el mouse encima):
+ *
+ *   - Celular: cada fila lleva su resumen y se ilumina al pasar.
+ *   - Escritorio: a la derecha, un panel sticky muestra la ficha completa
+ *     del servicio encendido, con lo que incluye.
+ *
+ * Sin movimiento, es una lista normal con todos los resúmenes a la vista.
+ */
+import CabeceraDeSeccion from '@/components/ui/CabeceraDeSeccion.astro';
+import IconoDeServicio from '@/components/ui/IconoDeServicio.astro';
+import { servicios } from '@/datos/servicios';
+
+const numero = (i: number): string => String(i + 1).padStart(2, '0');
+---
+
+<section
+  class="seccion"
+  id="servicios"
+  aria-labelledby="titulo-servicios"
+  data-escena="constelacion"
+>
+  <div class="envoltura">
+    <CabeceraDeSeccion
+      id="titulo-servicios"
+      titulo="Siete capacidades, <em>un mismo sistema</em>"
+      rotulo={{ numero: '03', texto: 'Servicios' }}
+    >
+      <p class="plomo" data-revelar>
+        Puedes contratar una sola. Rinden más cuando se alimentan entre ellas.
+      </p>
+    </CabeceraDeSeccion>
+
+    <div class="indice" data-indice>
+      <ol class="lista">
+        {servicios.map((servicio, i) => (
+          <li class="fila" data-fila>
+            <span class="numero" aria-hidden="true">
+              {numero(i)}
+            </span>
+            <div class="cuerpo">
+              <h3>{servicio.nombre}</h3>
+              <p class="resumen">{servicio.resumen}</p>
+            </div>
+            <IconoDeServicio servicio={servicio.id} />
+          </li>
+        ))}
+      </ol>
+
+      {/* Repite lo que dice la lista, por eso se oculta a los lectores. */}
+      <div class="panel" aria-hidden="true">
+        <div class="panel-fijo">
+          {servicios.map((servicio, i) => (
+            <article class="ficha" data-ficha>
+              <div class="ficha-cabeza">
+                <span class="ficha-numero">{numero(i)}</span>
+                <IconoDeServicio servicio={servicio.id} />
+              </div>
+              <p class="ficha-nombre">{servicio.nombre}</p>
+              <p class="ficha-resumen">{servicio.resumen}</p>
+              <ul class="incluye">
+                {servicio.incluye.map((punto) => (
+                  <li>{punto}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <p class="accion-final" data-revelar>
+      <a class="enlace-subrayado" href="/servicios">
+        Ver el detalle de cada servicio
+      </a>
+    </p>
+  </div>
+</section>
+
+<script>
+  import { iniciarIndice } from '@/scripts/historia/indice';
+  iniciarIndice();
+</script>
+
+<style>
+  /* --- La lista (igual en todos los tamaños) ------------------------------- */
+  .lista {
+    border-top: 1px solid var(--linea);
+  }
+
+  .fila {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: clamp(1rem, 3vw, 2rem);
+    padding-block: clamp(1.5rem, 4vw, 2.25rem);
+    border-bottom: 1px solid var(--linea);
+  }
+
+  .numero {
+    min-width: 2ch;
+    padding-top: 0.2em;
+    font-family: var(--acento-fuente);
+    font-style: italic;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    line-height: 1;
+    color: var(--texto-suave);
+  }
+
+  h3 {
+    font-size: var(--t-2);
+    line-height: 1.15;
+  }
+
+  .resumen {
+    margin-top: 0.6rem;
+    max-width: 46ch;
+    color: var(--texto-suave);
+  }
+
+  /* --- Con movimiento: la fila encendida ---------------------------------------
+     Solo cambian color, opacidad y una línea que crece: nada que mueva el
+     layout mientras se hace scroll. */
+  :global(.movimiento) .fila {
+    transition: opacity var(--medio);
+  }
+
+  :global(.movimiento) .fila:not(:global(.esta-encendida)) {
+    opacity: 0.42;
+  }
+
+  :global(.movimiento) .fila::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cian), var(--azul) 60%, transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s var(--curva);
+  }
+
+  :global(.movimiento) .fila:global(.esta-encendida)::before {
+    transform: none;
+  }
+
+  :global(.movimiento) .fila .numero {
+    transition: color var(--medio);
+  }
+
+  :global(.movimiento) .fila:global(.esta-encendida) .numero {
+    color: var(--acento);
+  }
+
+  /* El panel solo existe en escritorio y con movimiento. */
+  .panel {
+    display: none;
+  }
+
+  /* --- Escritorio: lista a la izquierda, ficha fija a la derecha ------------ */
+  @media (min-width: 60rem) {
+    :global(.movimiento) .indice {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: clamp(3rem, 6vw, 6rem);
+      align-items: start;
+    }
+
+    :global(.movimiento) .fila {
+      grid-template-columns: auto 1fr;
+      align-items: baseline;
+      padding-block: clamp(1.75rem, 5.5vh, 3rem);
+    }
+
+    :global(.movimiento) h3 {
+      font-size: var(--t-3);
+      letter-spacing: -0.03em;
+      transition: transform var(--medio);
+    }
+
+    :global(.movimiento) .fila:global(.esta-encendida) h3 {
+      transform: translateX(0.35em);
+    }
+
+    /* El icono y el resumen se ven en el panel. El resumen sigue en la lista
+         para los lectores de pantalla. */
+    :global(.movimiento) .fila :global(.icono) {
+      display: none;
+    }
+
+    :global(.movimiento) .resumen {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* Se estira a la altura de la lista para que la ficha la acompañe. */
+    :global(.movimiento) .panel {
+      display: block;
+      align-self: stretch;
+    }
+
+    /* Todas las fichas ocupan la misma celda; solo la encendida se ve. */
+    .panel-fijo {
+      position: sticky;
+      top: calc(var(--alto-cabecera) + 3rem);
+      display: grid;
+    }
+
+    .ficha {
+      grid-area: 1 / 1;
+      display: grid;
+      align-content: start;
+      gap: 1rem;
+      padding: clamp(1.75rem, 3vw, 2.5rem);
+      border: 1px solid rgb(90 210 255 / 0.35);
+      border-radius: 28px;
+      background:
+        radial-gradient(30rem 14rem at 100% 0%, rgb(47 125 255 / 0.18), transparent 70%),
+        linear-gradient(180deg, #0c1428, #080e1d);
+      box-shadow: 0 30px 80px rgb(47 125 255 / 0.18);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(18px) scale(0.98);
+      transition:
+        opacity 0.45s var(--curva),
+        transform 0.7s var(--curva),
+        visibility 0s linear 0.45s;
+    }
+
+    .ficha:global(.esta-encendida) {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition:
+        opacity 0.45s var(--curva) 0.08s,
+        transform 0.7s var(--curva) 0.08s,
+        visibility 0s;
+    }
+
+    .ficha-cabeza {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .ficha-numero {
+      padding-right: 0.1em;
+      font-family: var(--acento-fuente);
+      font-style: italic;
+      font-size: clamp(3.5rem, 6vw, 5.5rem);
+      line-height: 0.8;
+      background: var(--savia);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .ficha-nombre {
+      font-family: var(--display);
+      font-size: var(--t-2);
+      font-weight: 600;
+      line-height: 1.15;
+    }
+
+    .ficha-resumen {
+      color: var(--texto-suave);
+    }
+
+    .incluye {
+      display: grid;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--linea);
+    }
+
+    .incluye li {
+      display: flex;
+      gap: 0.75rem;
+      align-items: baseline;
+    }
+
+    .incluye li::before {
+      content: '';
+      flex: none;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--acento);
+      translate: 0 -0.15em;
+    }
+  }
+</style>

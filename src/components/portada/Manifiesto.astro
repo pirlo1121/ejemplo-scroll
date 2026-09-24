@@ -1,16 +1,16 @@
 ---
 /**
- * Capítulo 2 · El ecosistema — "a través de la O".
+ * Capítulo 2 · El ecosistema.
  *
- * La palabra gigante "ecosistema" tiene la O dibujada como un anillo, que
- * enmarca la esfera de partículas del fondo. Al bajar, la cámara vuela a
- * través del hueco de esa O y, del otro lado, aparece el manifiesto, que se
- * entinta cláusula por cláusula mientras se lee.
+ * La palabra gigante "ecosistema" tiene la O dibujada como un anillo que
+ * gira despacio y deja ver la esfera de partículas del fondo. Debajo, el
+ * manifiesto: una cláusula por línea, y cada una se entinta cuando cruza la
+ * línea de lectura (scripts/historia/manifiesto.ts pone .esta-entintada).
  *
- * Todo el movimiento sale de --p (modo "fija") y se calcula en el CSS.
- * scripts/historia/manifiesto.ts solo mide dónde está el anillo.
+ * La sección no se fija ni alarga el scroll: mide lo que mide su contenido,
+ * así que en el celular se recorre igual de natural que en el escritorio.
  *
- * Sin movimiento, la palabra no se muestra y el manifiesto es un párrafo normal.
+ * Sin movimiento, la palabra está quieta y el manifiesto se lee en tinta plena.
  */
 import Rotulo from '@/components/ui/Rotulo.astro';
 
@@ -29,28 +29,25 @@ const clausulas = [
   id="manifiesto"
   aria-label="Nuestra forma de ver el trabajo digital"
   data-escena="esfera"
-  data-progreso="fija"
-  data-manifiesto
 >
-  <div class="marco">
-    <p class="portal" aria-hidden="true" data-portal>
+  <div class="envoltura">
+    <Rotulo numero="02">Manifiesto</Rotulo>
+
+    <p class="portal" aria-hidden="true" data-revelar>
       <span class="letras">ec</span>
-      <span class="anillo" data-anillo></span>
+      <span class="anillo"></span>
       <span class="letras">sistema</span>
     </p>
 
-    <div class="envoltura contenido">
-      <Rotulo numero="02">Manifiesto</Rotulo>
-      <p class="texto">
-        {clausulas.map((clausula, i) => (
-          <>
-            <span class="clausula" style={{ '--i': i }}>
-              {clausula}
-            </span>{' '}
-          </>
-        ))}
-      </p>
-    </div>
+    <p class="texto">
+      {clausulas.map((clausula, i) => (
+        <>
+          <span class="clausula" data-clausula style={{ '--i': i }}>
+            {clausula}
+          </span>{' '}
+        </>
+      ))}
+    </p>
   </div>
 </section>
 
@@ -64,76 +61,20 @@ const clausulas = [
     padding-block: var(--bloque);
   }
 
-  .texto {
-    margin-top: 1.25rem;
-    font-family: var(--display);
-    font-weight: 300;
-    font-size: clamp(1.7rem, 3.6vw, 3.4rem);
-    line-height: 1.2;
-    letter-spacing: -0.035em;
-    max-width: 24ch;
-  }
-
+  /* --- La palabra-portal ----------------------------------------------------
+     Es flex para ignorar los espacios entre "ec", el anillo y "sistema": así
+     el formateo del código nunca separa la palabra. El tamaño está pensado
+     para que "ecosistema" quepa entera en un teléfono de 320 px. */
   .portal {
-    display: none;
-  }
-
-  /* --- Con movimiento ------------------------------------------------------
-     Guion sobre --p (0 → 1 mientras el marco está fijo):
-       0.06 – 0.56  vuelo a través de la O (--t)
-       0.42 – 0.56  el manifiesto llega desde el fondo (--r)
-       0.50 – 0.95  cada cláusula se entinta, una tras otra (--q)
-     ------------------------------------------------------------------------- */
-  :global(.movimiento) .manifiesto {
-    height: 340vh;
-    padding: 0;
-  }
-
-  :global(.movimiento) .marco {
-    position: sticky;
-    top: 0;
-    height: 100svh;
-    display: grid;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  /* La palabra-portal.
-     - Se centra en el marco con inset + margin: auto, sin transform, que queda
-       libre para el vuelo.
-     - Es flex para ignorar los espacios entre "ec", el anillo y "sistema": así
-       el formateo del código nunca separa la palabra.
-     - La cámara se acerca a la O (transform-origin) y a la vez la lleva al
-       centro de la pantalla (translate). La escala crece al cubo: empieza lenta
-       y se precipita.
-     - Sin will-change a propósito: congelaría la capa a su tamaño inicial y el
-       anillo se vería pixelado al ampliarlo 70 veces. Es una sola palabra, así
-       que volver a dibujarla nítida en cada escala es barato. */
-  :global(.movimiento) .portal {
-    --t: clamp(0, calc((var(--p, 0) - 0.06) / 0.5), 1);
-    position: absolute;
-    inset: 0;
-    z-index: 1;
     display: flex;
     align-items: baseline;
-    width: max-content;
-    height: max-content;
-    margin: auto;
+    margin-block: clamp(1.5rem, 4vw, 2.5rem) clamp(2rem, 6vw, 4.5rem);
     font-family: var(--display);
     font-weight: 600;
-    font-size: clamp(3.5rem, 15vw, 15rem);
+    font-size: clamp(2.6rem, 14.5vw, 13rem);
     line-height: 1;
     letter-spacing: -0.05em;
     white-space: nowrap;
-    pointer-events: none;
-    transform-origin: var(--origen-x, 50%) var(--origen-y, 50%);
-    transform: translate3d(
-        calc(var(--hacia-x, 0px) * var(--t)),
-        calc(var(--hacia-y, 0px) * var(--t)),
-        0
-      )
-      scale(calc(1 + 69 * var(--t) * var(--t) * var(--t)));
-    opacity: calc((1 - var(--t)) * 5);
   }
 
   .letras {
@@ -145,15 +86,23 @@ const clausulas = [
   }
 
   /* La O es un anillo dibujado: su hueco es transparente y deja ver la
-     esfera de partículas que hay detrás. */
+     esfera de partículas que hay detrás. El ángulo del degradado es una
+     propiedad registrada para poder animarlo (ver @keyframes girar). */
+  @property --giro-anillo {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 200deg;
+  }
+
   .anillo {
     display: inline-block;
+    flex: none;
     width: 0.56em;
     height: 0.56em;
     margin-inline: 0.02em;
     border-radius: 50%;
     background: conic-gradient(
-      from 200deg,
+      from var(--giro-anillo),
       var(--indigo),
       var(--azul),
       var(--cian),
@@ -161,22 +110,54 @@ const clausulas = [
       var(--indigo)
     );
     mask: radial-gradient(circle, transparent 55%, #000 56%);
-    vertical-align: baseline;
   }
 
-  /* El manifiesto espera del otro lado de la O y avanza hacia la cámara. */
-  :global(.movimiento) .contenido {
-    --r: clamp(0, calc((var(--p, 0) - 0.42) / 0.14), 1);
-    opacity: var(--r);
-    transform: scale(calc(0.86 + var(--r) * 0.14));
-    transform-origin: 30% 50%;
+  /* --- El manifiesto -------------------------------------------------------- */
+  .texto {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(1.6rem, 3.6vw, 3.4rem);
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+    max-width: 26ch;
+  }
+
+  /* Una cláusula por línea: se lee como un manifiesto y cada línea tiene su
+     propio momento al pasar por la línea de lectura. */
+  .clausula {
+    display: block;
+  }
+
+  .clausula + .clausula {
+    margin-top: 0.12em;
+  }
+
+  /* --- Con movimiento ------------------------------------------------------- */
+
+  /* El anillo entra girando y creciendo, y después su degradado sigue
+     girando despacio. La animación mueve el ángulo del degradado, no el
+     anillo: así no pelea con la transición de entrada, que usa transform. */
+  :global(.movimiento) .anillo {
+    transform: scale(0.2) rotate(-200deg);
+    transition: transform 1.4s var(--curva) 0.15s;
+    animation: girar 14s linear infinite paused;
+  }
+
+  :global(.movimiento) .portal:global(.es-visible) .anillo {
+    transform: none;
+    animation-play-state: running;
+  }
+
+  @keyframes girar {
+    to {
+      --giro-anillo: 560deg;
+    }
   }
 
   /* Cada cláusula se llena de tinta de izquierda a derecha, con un borde cian
-     que avanza. En un párrafo de varias líneas, el fondo recorre los
-     fragmentos en orden de lectura. */
+     que avanza. Es una transición por tiempo: no depende de la velocidad del
+     dedo ni de la rueda, así que se ve igual de suave en cualquier equipo. */
   :global(.movimiento) .clausula {
-    --q: clamp(0, calc((var(--p, 0) - 0.5 - var(--i) * 0.075) / 0.075), 1);
     background-image: linear-gradient(
       90deg,
       var(--texto) 0 44%,
@@ -184,9 +165,15 @@ const clausulas = [
       rgb(233 239 251 / 0.14) 53% 100%
     );
     background-size: 220% 100%;
-    background-position: calc((1 - var(--q)) * 100%) 0;
+    background-position: 100% 0;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    transition: background-position 1.3s var(--curva);
+    transition-delay: var(--retardo, 0s);
+  }
+
+  :global(.movimiento) .clausula:global(.esta-entintada) {
+    background-position: 0 0;
   }
 </style>

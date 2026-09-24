@@ -1,35 +1,48 @@
 /**
  * manifiesto.ts
- * El vuelo "a través de la O" lo hace el CSS con --p. Este script solo mide,
- * al cargar y al redimensionar, dónde queda el anillo dentro de la palabra:
+ * Entinta cada cláusula del manifiesto ([data-clausula]) cuando cruza la
+ * línea de lectura, a un 30 % del borde inferior de la pantalla. La
+ * transición la hace el CSS con .esta-entintada; una vez entintada, se queda.
  *
- *   --origen-x / --origen-y  centro del anillo: punto fijo del zoom
- *   --hacia-x / --hacia-y    distancia del anillo al centro de la pantalla,
- *                            para que la cámara lo lleve hasta ahí al acercarse
- *
- * Se usan offsetLeft/offsetTop, que ignoran las transformaciones: la medida
- * es la misma en cualquier punto del scroll.
+ * Si varias cláusulas llegan en el mismo cuadro (scroll rápido o salto a un
+ * ancla), se entintan escalonadas, en orden de lectura.
  */
 
 import { hayMovimiento } from '../nucleo/preferencias';
 
+const ESCALON = 0.14;
+
 export function iniciarManifiesto(): void {
-  const palabra = document.querySelector<HTMLElement>('[data-portal]');
-  const anillo = palabra?.querySelector<HTMLElement>('[data-anillo]');
-  if (!palabra || !anillo || !hayMovimiento()) return;
+  const clausulas = Array.from(document.querySelectorAll<HTMLElement>('[data-clausula]'));
+  if (!clausulas.length || !hayMovimiento()) return;
 
-  const medir = (): void => {
-    const centroX = anillo.offsetLeft + anillo.offsetWidth / 2;
-    const centroY = anillo.offsetTop + anillo.offsetHeight / 2;
-
-    palabra.style.setProperty('--origen-x', `${centroX}px`);
-    palabra.style.setProperty('--origen-y', `${centroY}px`);
-    palabra.style.setProperty('--hacia-x', `${palabra.offsetWidth / 2 - centroX}px`);
-    palabra.style.setProperty('--hacia-y', `${palabra.offsetHeight / 2 - centroY}px`);
+  const entintar = (clausula: HTMLElement, orden: number): void => {
+    clausula.style.setProperty('--retardo', `${orden * ESCALON}s`);
+    clausula.classList.add('esta-entintada');
   };
 
-  medir();
-  window.addEventListener('resize', medir);
-  // Con la fuente definitiva cambian los anchos de las letras.
-  document.fonts?.ready.then(medir);
+  if (!('IntersectionObserver' in window)) {
+    clausulas.forEach(entintar);
+    return;
+  }
+
+  const observador = new IntersectionObserver(
+    (entradas) => {
+      const listas = entradas
+        .filter(
+          // También las que ya quedaron por encima (se llegó por un ancla).
+          (entrada) => entrada.isIntersecting || entrada.boundingClientRect.bottom < 0
+        )
+        .map((entrada) => entrada.target as HTMLElement)
+        .sort((a, b) => clausulas.indexOf(a) - clausulas.indexOf(b));
+
+      listas.forEach((clausula, orden) => {
+        entintar(clausula, orden);
+        observador.unobserve(clausula);
+      });
+    },
+    { threshold: 0.6, rootMargin: '0px 0px -30% 0px' }
+  );
+
+  clausulas.forEach((clausula) => observador.observe(clausula));
 }

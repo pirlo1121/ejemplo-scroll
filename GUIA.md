@@ -83,7 +83,7 @@ client/
    │  ├─ funciones/          Solo en las páginas que las usan
    │  │  └─ contadores, parallax, carril, filtros, indice-legal
    │  ├─ historia/           Narrativa de la portada
-   │  │  ├─ manifiesto.ts, orbita.ts, proceso.ts, capitulos.ts
+   │  │  ├─ manifiesto.ts, indice.ts, proceso.ts, capitulos.ts
    │  │  └─ escena/          cargador.ts (decide y conecta), escena.ts (dibuja), formas.ts
    │  └─ contacto/
    │     ├─ api.ts            Única función que llama a fetch
@@ -141,7 +141,7 @@ propiedades directamente.
 
 | `data-progreso` | 0 cuando… | 1 cuando… | Se usa en |
 |---|---|---|---|
-| `fija` | la sección alta llega arriba | su marco *sticky* se suelta | Manifiesto, carril de servicios (la órbita lo mide con `medirProgreso`) |
+| `fija` | la sección alta llega arriba | su marco *sticky* se suelta | Carril de servicios |
 | `salida` | la pieza está arriba del todo | ya salió por arriba | Héroe |
 | `entrada` | asoma por abajo | llega al 35 % superior | Proyectos destacados |
 | `recorrido` | su borde superior cruza el 55 % de la pantalla | lo cruza el inferior | Línea del proceso |
@@ -155,30 +155,25 @@ escena interpola partícula por partícula entre dos figuras.
 
 ### Los dos efectos protagonistas
 
-**Manifiesto — "a través de la O"** (`portada/Manifiesto.astro`). La palabra
-gigante *ecosistema* tiene la O dibujada como un anillo, cuyo hueco enmarca la
-esfera de partículas. Al bajar, la cámara vuela a través de la O y del otro
-lado aparece el manifiesto, que se entinta cláusula por cláusula. Todo el guion
-está en el CSS, calculado a partir de `--p`:
+**Manifiesto** (`portada/Manifiesto.astro`). La palabra gigante *ecosistema*
+tiene la O dibujada como un anillo, cuyo hueco deja ver la esfera de partículas.
+El anillo entra girando al revelarse y después su degradado sigue rotando
+despacio (`--giro-anillo`, una propiedad registrada con `@property`). Debajo,
+una cláusula por línea: `historia/manifiesto.ts` le pone `.esta-entintada` a
+cada una cuando cruza la línea de lectura (30 % desde abajo) y el CSS la llena
+de tinta con una transición por tiempo, con un borde cian que avanza.
 
-| Tramo de `--p` | Qué pasa | Variable |
-|---|---|---|
-| 0,06 – 0,56 | Zoom al cubo (×70) hacia el anillo, que se desplaza al centro | `--t` |
-| 0,42 – 0,56 | El manifiesto llega desde el fondo | `--r` |
-| 0,50 – 0,95 | Cada cláusula se llena de tinta, con un borde cian | `--q` |
+**Servicios — "índice"** (`portada/IndiceDeServicios.astro`). Los siete
+servicios como un índice tipográfico. `historia/indice.ts` enciende
+(`.esta-encendida`) la fila que cruza la franja central de la pantalla, o la que
+tiene el mouse encima. En el celular cada fila lleva su resumen; en escritorio
+un panel *sticky* a la derecha muestra la ficha completa del servicio
+encendido, con lo que incluye.
 
-`historia/manifiesto.ts` solo mide, al cargar y al redimensionar, dónde está el
-anillo (`--origen-*`, `--hacia-*`). La palabra no lleva `will-change` a
-propósito: congelaría la capa a su tamaño inicial y el anillo se vería pixelado
-al ampliarlo.
-
-**Servicios — "órbita"** (`portada/OrbitaDeServicios.astro`). Los siete
-servicios forman un anillo 3D, igual que los siete cúmulos de partículas de la
-escena. `historia/orbita.ts` convierte el scroll en `--giro` (de 0 a 6, en
-"fichas"), con una pausa en cada servicio: en cada tramo solo gira el 40 %
-central. El CSS pone cada ficha en el anillo
-(`rotateY(i × 360°/7) translateZ(radio)`) y usa `cos()` para atenuar las fichas
-según lo lejos que estén del frente.
+Ninguna de las dos se fija ni alarga el scroll: miden lo que mide su contenido.
+Antes fueron un vuelo "a través de la O" y una órbita 3D, las dos fijas con
+`sticky` durante varias pantallas; se veían bien en escritorio, pero en el
+celular obligaban a empujar mucho scroll sin avanzar.
 
 ### Reglas de oro del movimiento
 
@@ -270,8 +265,8 @@ CPU ralentizada ×4. El escritorio engaña.
   contenido se ve desde el inicio.
 - La palabra gigante del manifiesto es decorativa (`aria-hidden`); el
   manifiesto es un párrafo normal, dividido en cláusulas solo para el estilo.
-- La órbita de servicios es, en el HTML, una lista ordenada: los lectores de
-  pantalla leen los siete servicios en orden, sin depender del giro.
+- El índice de servicios es, en el HTML, una lista ordenada con los resúmenes;
+  el panel lateral repite esa información y por eso lleva `aria-hidden`.
 - Menú móvil `inert` mientras está cerrado; al abrirse atrapa el foco y se cierra
   con `Escape`, devolviendo el foco al botón.
 - Los saltos a anclas mueven también el foco.
@@ -284,7 +279,7 @@ CPU ralentizada ×4. El escritorio engaña.
 ## 7. Convenciones de código
 
 - **Idioma**: nombres de dominio en español, como el resto del proyecto
-  (`OrbitaDeServicios`, `registrarTarea`). Inglés solo donde lo impone la
+  (`IndiceDeServicios`, `registrarTarea`). Inglés solo donde lo impone la
   herramienta (`pages/`, `layouts/`, `components/`).
 - **Componentes** en `PascalCase.astro`; **scripts y datos** en `kebab-case.ts`.
 - **Props tipadas** con `interface Props` en cada componente.
