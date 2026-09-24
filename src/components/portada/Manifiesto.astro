@@ -1,17 +1,27 @@
 ---
 /**
- * Capítulo 2 · El ecosistema. Las partículas forman una esfera.
- * Con movimiento, la sección es alta y su marco queda fijo mientras las
- * palabras se encienden una a una (scripts/historia/manifiesto.ts).
+ * Capítulo 2 · El ecosistema — "a través de la O".
  *
- * Las palabras se separan aquí, en el servidor. Los lectores de pantalla
- * reciben la frase completa; las piezas sueltas son solo visuales.
+ * La palabra gigante "ecosistema" tiene la O dibujada como un anillo, que
+ * enmarca la esfera de partículas del fondo. Al bajar, la cámara vuela a
+ * través del hueco de esa O y, del otro lado, aparece el manifiesto, que se
+ * entinta cláusula por cláusula mientras se lee.
+ *
+ * Todo el movimiento sale de --p (modo "fija") y se calcula en el CSS.
+ * scripts/historia/manifiesto.ts solo mide dónde está el anillo.
+ *
+ * Sin movimiento, la palabra no se muestra y el manifiesto es un párrafo normal.
  */
 import Rotulo from '@/components/ui/Rotulo.astro';
 
-const texto =
-  'Una presencia digital sana funciona como un ecosistema: el sitio atrae, la automatización responde, el producto retiene, el contenido sostiene y la marca le da sentido a todo lo demás.';
-const palabras = texto.split(' ');
+const clausulas = [
+  'Una presencia digital sana funciona como un ecosistema:',
+  'el sitio atrae,',
+  'la automatización responde,',
+  'el producto retiene,',
+  'el contenido sostiene',
+  'y la marca le da sentido a todo lo demás.'
+];
 ---
 
 <section
@@ -23,17 +33,22 @@ const palabras = texto.split(' ');
   data-manifiesto
 >
   <div class="marco">
-    <div class="envoltura">
+    <p class="portal" aria-hidden="true" data-portal>
+      <span class="letras">ec</span>
+      <span class="anillo" data-anillo></span>
+      <span class="letras">sistema</span>
+    </p>
+
+    <div class="envoltura contenido">
       <Rotulo numero="02">Manifiesto</Rotulo>
       <p class="texto">
-        <span class="solo-lectores">{texto}</span>
-        <span aria-hidden="true">
-          {palabras.map((palabra) => (
-            <>
-              <span class="palabra">{palabra}</span>{' '}
-            </>
-          ))}
-        </span>
+        {clausulas.map((clausula, i) => (
+          <>
+            <span class="clausula" style={{ '--i': i }}>
+              {clausula}
+            </span>{' '}
+          </>
+        ))}
       </p>
     </div>
   </div>
@@ -59,15 +74,18 @@ const palabras = texto.split(' ');
     max-width: 24ch;
   }
 
-  .palabra {
-    transition:
-      color 0.5s ease,
-      text-shadow 0.5s ease;
+  .portal {
+    display: none;
   }
 
-  /* Con movimiento: sección alta, marco fijo y palabras apagadas hasta su turno. */
+  /* --- Con movimiento ------------------------------------------------------
+     Guion sobre --p (0 → 1 mientras el marco está fijo):
+       0.06 – 0.56  vuelo a través de la O (--t)
+       0.42 – 0.56  el manifiesto llega desde el fondo (--r)
+       0.50 – 0.95  cada cláusula se entinta, una tras otra (--q)
+     ------------------------------------------------------------------------- */
   :global(.movimiento) .manifiesto {
-    height: 260vh;
+    height: 340vh;
     padding: 0;
   }
 
@@ -77,19 +95,98 @@ const palabras = texto.split(' ');
     height: 100svh;
     display: grid;
     align-items: center;
+    overflow: hidden;
   }
 
-  :global(.movimiento) .texto {
-    transform: scale(calc(0.96 + var(--p, 0) * 0.04));
-    transform-origin: 0 50%;
+  /* La palabra-portal.
+     - Se centra en el marco con inset + margin: auto, sin transform, que queda
+       libre para el vuelo.
+     - Es flex para ignorar los espacios entre "ec", el anillo y "sistema": así
+       el formateo del código nunca separa la palabra.
+     - La cámara se acerca a la O (transform-origin) y a la vez la lleva al
+       centro de la pantalla (translate). La escala crece al cubo: empieza lenta
+       y se precipita.
+     - Sin will-change a propósito: congelaría la capa a su tamaño inicial y el
+       anillo se vería pixelado al ampliarlo 70 veces. Es una sola palabra, así
+       que volver a dibujarla nítida en cada escala es barato. */
+  :global(.movimiento) .portal {
+    --t: clamp(0, calc((var(--p, 0) - 0.06) / 0.5), 1);
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    width: max-content;
+    height: max-content;
+    margin: auto;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(3.5rem, 15vw, 15rem);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+    pointer-events: none;
+    transform-origin: var(--origen-x, 50%) var(--origen-y, 50%);
+    transform: translate3d(
+        calc(var(--hacia-x, 0px) * var(--t)),
+        calc(var(--hacia-y, 0px) * var(--t)),
+        0
+      )
+      scale(calc(1 + 69 * var(--t) * var(--t) * var(--t)));
+    opacity: calc((1 - var(--t)) * 5);
   }
 
-  :global(.movimiento) .palabra {
-    color: rgb(233 239 251 / 0.14);
+  .letras {
+    background: var(--savia);
+    background-size: 100vw 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
-  :global(.movimiento) .palabra.encendida {
-    color: var(--texto);
-    text-shadow: 0 0 28px rgb(90 210 255 / 0.25);
+  /* La O es un anillo dibujado: su hueco es transparente y deja ver la
+     esfera de partículas que hay detrás. */
+  .anillo {
+    display: inline-block;
+    width: 0.56em;
+    height: 0.56em;
+    margin-inline: 0.02em;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 200deg,
+      var(--indigo),
+      var(--azul),
+      var(--cian),
+      var(--hielo),
+      var(--indigo)
+    );
+    mask: radial-gradient(circle, transparent 55%, #000 56%);
+    vertical-align: baseline;
+  }
+
+  /* El manifiesto espera del otro lado de la O y avanza hacia la cámara. */
+  :global(.movimiento) .contenido {
+    --r: clamp(0, calc((var(--p, 0) - 0.42) / 0.14), 1);
+    opacity: var(--r);
+    transform: scale(calc(0.86 + var(--r) * 0.14));
+    transform-origin: 30% 50%;
+  }
+
+  /* Cada cláusula se llena de tinta de izquierda a derecha, con un borde cian
+     que avanza. En un párrafo de varias líneas, el fondo recorre los
+     fragmentos en orden de lectura. */
+  :global(.movimiento) .clausula {
+    --q: clamp(0, calc((var(--p, 0) - 0.5 - var(--i) * 0.075) / 0.075), 1);
+    background-image: linear-gradient(
+      90deg,
+      var(--texto) 0 44%,
+      var(--cian) 49%,
+      rgb(233 239 251 / 0.14) 53% 100%
+    );
+    background-size: 220% 100%;
+    background-position: calc((1 - var(--q)) * 100%) 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 </style>

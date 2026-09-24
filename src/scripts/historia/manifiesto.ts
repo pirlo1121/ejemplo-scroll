@@ -1,35 +1,35 @@
 /**
  * manifiesto.ts
- * Mientras el marco del manifiesto está fijo, cada tramo de scroll enciende
- * una palabra más. Las palabras ya vienen separadas desde el servidor
- * (Manifiesto.astro); aquí solo se decide cuántas van encendidas.
+ * El vuelo "a través de la O" lo hace el CSS con --p. Este script solo mide,
+ * al cargar y al redimensionar, dónde queda el anillo dentro de la palabra:
+ *
+ *   --origen-x / --origen-y  centro del anillo: punto fijo del zoom
+ *   --hacia-x / --hacia-y    distancia del anillo al centro de la pantalla,
+ *                            para que la cámara lo lleve hasta ahí al acercarse
+ *
+ * Se usan offsetLeft/offsetTop, que ignoran las transformaciones: la medida
+ * es la misma en cualquier punto del scroll.
  */
 
-import { registrarTarea } from '../nucleo/bucle';
-import { limitar } from '../nucleo/matematica';
 import { hayMovimiento } from '../nucleo/preferencias';
-import { medirProgreso } from '../nucleo/progreso';
-
-/** Tramo del recorrido en el que se encienden las palabras; el resto es respiro. */
-const INICIO = 0.08;
-const FIN = 0.8;
 
 export function iniciarManifiesto(): void {
-  const seccion = document.querySelector<HTMLElement>('[data-manifiesto]');
-  const palabras = Array.from(seccion?.querySelectorAll<HTMLElement>('.palabra') ?? []);
-  if (!seccion || !palabras.length || !hayMovimiento()) return;
+  const palabra = document.querySelector<HTMLElement>('[data-portal]');
+  const anillo = palabra?.querySelector<HTMLElement>('[data-anillo]');
+  if (!palabra || !anillo || !hayMovimiento()) return;
 
-  let encendidas = -1;
+  const medir = (): void => {
+    const centroX = anillo.offsetLeft + anillo.offsetWidth / 2;
+    const centroY = anillo.offsetTop + anillo.offsetHeight / 2;
 
-  registrarTarea({
-    leer: (alto) => {
-      const p = medirProgreso(seccion.getBoundingClientRect(), alto, 'fija');
-      return Math.round(limitar((p - INICIO) / (FIN - INICIO)) * palabras.length);
-    },
-    escribir: (corte) => {
-      if (corte === encendidas) return;
-      encendidas = corte;
-      palabras.forEach((palabra, i) => palabra.classList.toggle('encendida', i < corte));
-    }
-  });
+    palabra.style.setProperty('--origen-x', `${centroX}px`);
+    palabra.style.setProperty('--origen-y', `${centroY}px`);
+    palabra.style.setProperty('--hacia-x', `${palabra.offsetWidth / 2 - centroX}px`);
+    palabra.style.setProperty('--hacia-y', `${palabra.offsetHeight / 2 - centroY}px`);
+  };
+
+  medir();
+  window.addEventListener('resize', medir);
+  // Con la fuente definitiva cambian los anchos de las letras.
+  document.fonts?.ready.then(medir);
 }

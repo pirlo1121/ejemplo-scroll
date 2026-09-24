@@ -83,7 +83,7 @@ client/
    │  ├─ funciones/          Solo en las páginas que las usan
    │  │  └─ contadores, parallax, carril, filtros, indice-legal
    │  ├─ historia/           Narrativa de la portada
-   │  │  ├─ manifiesto.ts, pila.ts, proceso.ts, capitulos.ts
+   │  │  ├─ manifiesto.ts, orbita.ts, proceso.ts, capitulos.ts
    │  │  └─ escena/          cargador.ts (decide y conecta), escena.ts (dibuja), formas.ts
    │  └─ contacto/
    │     ├─ api.ts            Única función que llama a fetch
@@ -112,7 +112,7 @@ datos/*.ts ──► components/**/*.astro ──► pages/*.astro ──► HTM
   `funciones/carril.ts` en su `<script>`; una página sin carril no descarga ese
   código. Astro agrupa y deduplica los scripts.
 - **Lo que no necesita JavaScript no lo usa**: los titulares se dividen en líneas
-  y el manifiesto en palabras **en el servidor**; el acordeón es
+  y el manifiesto en cláusulas **en el servidor**; el acordeón es
   `<details>`; la página actual se marca con `aria-current` en el build.
 
 ---
@@ -141,7 +141,7 @@ propiedades directamente.
 
 | `data-progreso` | 0 cuando… | 1 cuando… | Se usa en |
 |---|---|---|---|
-| `fija` | la sección alta llega arriba | su marco *sticky* se suelta | Manifiesto, carril de servicios |
+| `fija` | la sección alta llega arriba | su marco *sticky* se suelta | Manifiesto, carril de servicios (la órbita lo mide con `medirProgreso`) |
 | `salida` | la pieza está arriba del todo | ya salió por arriba | Héroe |
 | `entrada` | asoma por abajo | llega al 35 % superior | Proyectos destacados |
 | `recorrido` | su borde superior cruza el 55 % de la pantalla | lo cruza el inferior | Línea del proceso |
@@ -152,6 +152,33 @@ Cada capítulo declara su figura con `data-escena`: `nube`, `esfera`,
 `constelacion`, `rejilla`, `onda` o `anillo` (ver `escena/formas.ts`). El
 cargador calcula en qué punto de la historia está el centro de la pantalla y la
 escena interpola partícula por partícula entre dos figuras.
+
+### Los dos efectos protagonistas
+
+**Manifiesto — "a través de la O"** (`portada/Manifiesto.astro`). La palabra
+gigante *ecosistema* tiene la O dibujada como un anillo, cuyo hueco enmarca la
+esfera de partículas. Al bajar, la cámara vuela a través de la O y del otro
+lado aparece el manifiesto, que se entinta cláusula por cláusula. Todo el guion
+está en el CSS, calculado a partir de `--p`:
+
+| Tramo de `--p` | Qué pasa | Variable |
+|---|---|---|
+| 0,06 – 0,56 | Zoom al cubo (×70) hacia el anillo, que se desplaza al centro | `--t` |
+| 0,42 – 0,56 | El manifiesto llega desde el fondo | `--r` |
+| 0,50 – 0,95 | Cada cláusula se llena de tinta, con un borde cian | `--q` |
+
+`historia/manifiesto.ts` solo mide, al cargar y al redimensionar, dónde está el
+anillo (`--origen-*`, `--hacia-*`). La palabra no lleva `will-change` a
+propósito: congelaría la capa a su tamaño inicial y el anillo se vería pixelado
+al ampliarlo.
+
+**Servicios — "órbita"** (`portada/OrbitaDeServicios.astro`). Los siete
+servicios forman un anillo 3D, igual que los siete cúmulos de partículas de la
+escena. `historia/orbita.ts` convierte el scroll en `--giro` (de 0 a 6, en
+"fichas"), con una pausa en cada servicio: en cada tramo solo gira el 40 %
+central. El CSS pone cada ficha en el anillo
+(`rotateY(i × 360°/7) translateZ(radio)`) y usa `cos()` para atenuar las fichas
+según lo lejos que estén del frente.
 
 ### Reglas de oro del movimiento
 
@@ -241,8 +268,10 @@ CPU ralentizada ×4. El escritorio engaña.
 - `prefers-reduced-motion`: sin secciones fijas, sin Lenis, sin cursor a medida,
   sin parallax ni contadores; el lienzo queda como imagen estática y todo el
   contenido se ve desde el inicio.
-- El manifiesto se lee completo en una copia para lectores de pantalla; las
-  palabras sueltas son `aria-hidden`.
+- La palabra gigante del manifiesto es decorativa (`aria-hidden`); el
+  manifiesto es un párrafo normal, dividido en cláusulas solo para el estilo.
+- La órbita de servicios es, en el HTML, una lista ordenada: los lectores de
+  pantalla leen los siete servicios en orden, sin depender del giro.
 - Menú móvil `inert` mientras está cerrado; al abrirse atrapa el foco y se cierra
   con `Escape`, devolviendo el foco al botón.
 - Los saltos a anclas mueven también el foco.
@@ -255,7 +284,7 @@ CPU ralentizada ×4. El escritorio engaña.
 ## 7. Convenciones de código
 
 - **Idioma**: nombres de dominio en español, como el resto del proyecto
-  (`PilaDeServicios`, `registrarTarea`). Inglés solo donde lo impone la
+  (`OrbitaDeServicios`, `registrarTarea`). Inglés solo donde lo impone la
   herramienta (`pages/`, `layouts/`, `components/`).
 - **Componentes** en `PascalCase.astro`; **scripts y datos** en `kebab-case.ts`.
 - **Props tipadas** con `interface Props` en cada componente.
