@@ -1,0 +1,174 @@
+---
+/**
+ * Cabecera fija: marca, navegación de escritorio y botón del menú móvil.
+ * La página actual se marca con aria-current aquí, en el servidor.
+ * Se condensa al bajar (clase .esta-fija, ver nucleo/navegacion.ts).
+ */
+import Boton from '@/components/ui/Boton.astro';
+import { navegacion, sitio } from '@/config/sitio';
+import { esPaginaActual } from '@/utilidades/rutas';
+
+const ruta = Astro.url.pathname;
+---
+
+<header class="cabecera" data-cabecera>
+  <a class="marca" href="/" aria-label={`${sitio.nombre}, ir a la portada`}>
+    <span class="marca-semilla" aria-hidden="true"></span>
+    {sitio.nombre}
+  </a>
+
+  <nav class="enlaces" aria-label="Navegación principal">
+    {navegacion.map(({ etiqueta, href }) => (
+      <a class="enlace" href={href} aria-current={esPaginaActual(href, ruta) ? 'page' : undefined}>
+        {etiqueta}
+      </a>
+    ))}
+    <Boton href="/contacto" magnetico={0.22}>
+      Empezar un proyecto
+    </Boton>
+  </nav>
+
+  <button
+    class="menu-boton"
+    type="button"
+    data-menu-boton
+    aria-expanded="false"
+    aria-controls="menu"
+    aria-label="Abrir menú"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<style>
+  .cabecera {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--capa-cabecera);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: var(--alto-cabecera);
+    padding-inline: var(--gutter);
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color var(--medio),
+      border-color var(--medio),
+      height var(--medio);
+  }
+
+  /* Fondo casi opaco en vez de backdrop-filter: difuminar lo que hay debajo
+     en cada cuadro de scroll es caro en móviles. */
+  .cabecera.esta-fija {
+    height: calc(var(--alto-cabecera) - 0.75rem);
+    background: rgb(4 7 15 / 0.92);
+    border-bottom-color: var(--linea);
+  }
+
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+  }
+
+  .marca-semilla {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--savia);
+    box-shadow: 0 0 18px var(--brillo-cian);
+  }
+
+  .enlaces {
+    display: none;
+    gap: clamp(1rem, 2.4vw, 2.2rem);
+    align-items: center;
+  }
+
+  .enlace {
+    position: relative;
+    padding-block: 0.4rem;
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+    transition: color var(--rapido);
+  }
+
+  .enlace::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--acento);
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform var(--rapido);
+  }
+
+  .enlace:hover,
+  .enlace[aria-current='page'] {
+    color: var(--texto);
+  }
+
+  .enlace:hover::after,
+  .enlace[aria-current='page']::after {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+
+  .menu-boton {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 1px solid var(--linea);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border-color var(--rapido);
+  }
+
+  .menu-boton:hover {
+    border-color: var(--linea-fuerte);
+  }
+
+  .menu-boton span {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: var(--texto);
+    transition:
+      transform var(--rapido),
+      opacity var(--rapido);
+  }
+
+  .menu-boton[aria-expanded='true'] span:first-child {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .menu-boton[aria-expanded='true'] span:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-boton[aria-expanded='true'] span:last-child {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  @media (min-width: 60rem) {
+    .enlaces {
+      display: flex;
+    }
+    .menu-boton {
+      display: none;
+    }
+  }
+</style>

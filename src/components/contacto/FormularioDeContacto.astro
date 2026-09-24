@@ -1,0 +1,321 @@
+---
+/**
+ * Formulario de contacto conectado a POST /api/contact.
+ * Valida en el navegador (scripts/contacto) para responder al instante;
+ * el servidor vuelve a validar todo. Sin consentimiento no se envía nada.
+ */
+import Campo from './Campo.astro';
+import Boton from '@/components/ui/Boton.astro';
+import { servicios } from '@/datos/servicios';
+
+const opcionesDeServicio = servicios.map(({ id, etiquetaFormulario }) => ({
+  valor: id,
+  etiqueta: etiquetaFormulario
+}));
+---
+
+<form class="formulario" data-formulario-contacto novalidate>
+  <p class="aviso" data-aviso role="status" aria-live="polite"></p>
+
+  <div class="par">
+    <Campo
+      nombre="nombre"
+      etiqueta="Nombre"
+      autocompletar="name"
+      marcador="Tu nombre completo"
+      requerido
+    />
+    <Campo
+      nombre="email"
+      etiqueta="Correo"
+      tipo="email"
+      autocompletar="email"
+      marcador="nombre@empresa.com"
+      requerido
+    />
+  </div>
+
+  <div class="par">
+    <Campo
+      nombre="empresa"
+      etiqueta="Empresa"
+      autocompletar="organization"
+      marcador="Nombre de tu empresa"
+    />
+    <Campo
+      nombre="telefono"
+      etiqueta="Teléfono"
+      tipo="tel"
+      autocompletar="tel"
+      marcador="+57 300 000 0000"
+    />
+  </div>
+
+  <div class="par">
+    <Campo
+      nombre="servicio"
+      etiqueta="Servicio de tu interés"
+      control="select"
+      opciones={opcionesDeServicio}
+      requerido
+    />
+    <div class="rango">
+      <label for="presupuesto">Presupuesto aproximado</label>
+      <output data-rango-salida for="presupuesto"></output>
+      <input
+        id="presupuesto"
+        name="presupuesto"
+        type="range"
+        min="3000000"
+        max="60000000"
+        step="1000000"
+        value="12000000"
+        data-rango
+      />
+    </div>
+  </div>
+
+  <p class="aviso-sensible">
+    <strong>No incluyas información sensible.</strong> Evita escribir en este formulario datos de
+    salud, información financiera detallada, orientación sexual, creencias religiosas o políticas,
+    datos biométricos u otra información especialmente protegida. Si tu proyecto necesita tratar
+    este tipo de datos, lo definimos aparte en un acuerdo específico.
+  </p>
+
+  <Campo
+    nombre="mensaje"
+    etiqueta="Cuéntanos el contexto"
+    control="textarea"
+    marcador="Qué haces, qué está fallando hoy y para cuándo lo necesitas."
+    requerido
+  />
+
+  <!-- Campo trampa: invisible para personas, tentador para bots. -->
+  <div class="trampa" aria-hidden="true">
+    <label for="web">No llenes este campo</label>
+    <input id="web" name="web" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="consentimiento" data-campo data-error="false">
+    <label>
+      <input
+        type="checkbox"
+        id="consentimiento"
+        name="consentimiento"
+        required
+        aria-describedby="error-consentimiento"
+      />
+      <span>
+        He leído y acepto la
+        <a href="/privacidad" target="_blank" rel="noopener">
+          Política de Privacidad
+        </a>
+        .
+      </span>
+    </label>
+    <span class="error" id="error-consentimiento" data-error-campo role="alert"></span>
+  </div>
+
+  <div>
+    <Boton tipo="submit" variante="solido" magnetico={0.18}>
+      Enviar mensaje
+    </Boton>
+  </div>
+
+  <p class="suave pequeno">
+    Usamos tus datos únicamente para responder tu solicitud, tal como se explica en la
+    <a class="enlace-subrayado" href="/privacidad">
+      política de privacidad
+    </a>
+    .
+  </p>
+</form>
+
+<script>
+  import { iniciarFormulario } from '@/scripts/contacto/formulario';
+  iniciarFormulario();
+</script>
+
+<style>
+  .formulario {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .par {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  /* --- Presupuesto -------------------------------------------------------- */
+  .rango {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  .rango label {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  output {
+    font-family: var(--display);
+    font-size: var(--t-1);
+  }
+
+  input[type='range'] {
+    height: 2px;
+    padding: 0;
+    border-radius: 2px;
+    background: var(--linea-fuerte);
+    appearance: none;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--tinta);
+    border-radius: 50%;
+    background: var(--nube);
+    box-shadow: 0 0 0 1px var(--acento);
+    cursor: grab;
+    appearance: none;
+  }
+
+  input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--tinta);
+    border-radius: 50%;
+    background: var(--nube);
+    box-shadow: 0 0 0 1px var(--acento);
+  }
+
+  /* --- Estado del envío --------------------------------------------------- */
+  .aviso {
+    display: none;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--linea);
+    border-radius: 14px;
+    font-size: var(--t--1);
+  }
+
+  .aviso[data-estado='exito'] {
+    display: block;
+    border-color: rgb(90 210 255 / 0.5);
+    background: rgb(90 210 255 / 0.1);
+  }
+
+  .aviso[data-estado='error'] {
+    display: block;
+    border-color: rgb(255 122 107 / 0.5);
+    background: rgb(255 122 107 / 0.09);
+  }
+
+  .aviso-sensible {
+    padding: 1rem 1.15rem;
+    border: 1px dashed var(--borde-coral);
+    border-radius: 14px;
+    background: var(--velo-coral);
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+    line-height: 1.6;
+    max-width: none;
+  }
+
+  .aviso-sensible strong {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: var(--coral);
+    font-weight: 600;
+  }
+
+  .trampa {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+
+  /* --- Consentimiento ----------------------------------------------------- */
+  .consentimiento {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .consentimiento label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: var(--t--1);
+    line-height: 1.55;
+    color: var(--texto-suave);
+    cursor: pointer;
+  }
+
+  .consentimiento input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 0.1rem;
+    border: 1px solid var(--linea-fuerte);
+    border-radius: 6px;
+    background: var(--superficie);
+    cursor: pointer;
+    appearance: none;
+    transition:
+      border-color var(--rapido),
+      background-color var(--rapido);
+  }
+
+  .consentimiento input::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 10px;
+    margin: 2px auto 0;
+    border-right: 2px solid var(--tinta);
+    border-bottom: 2px solid var(--tinta);
+    transform: rotate(45deg) scale(0);
+    transition: transform var(--rapido);
+  }
+
+  .consentimiento input:checked {
+    border-color: var(--acento);
+    background: var(--acento);
+  }
+
+  .consentimiento input:checked::after {
+    transform: rotate(45deg) scale(1);
+  }
+
+  .consentimiento a {
+    color: var(--texto);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .consentimiento a:hover {
+    color: var(--acento);
+  }
+
+  .consentimiento[data-error='true'] label {
+    color: var(--coral-claro);
+  }
+
+  .consentimiento[data-error='true'] input {
+    border-color: var(--coral);
+  }
+
+  .error {
+    min-height: 1.2em;
+    font-size: var(--t--1);
+    color: var(--coral-claro);
+  }
+
+  @media (min-width: 46rem) {
+    .par {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

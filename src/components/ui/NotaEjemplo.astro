@@ -1,0 +1,32 @@
+---
+/**
+ * Aviso visible de contenido provisional. Nunca debe confundirse con
+ * información verificada: se retira cuando el contenido sea real.
+ */
+interface Props {
+  titulo: string;
+}
+
+const { titulo } = Astro.props;
+---
+
+<p class="nota" data-revelar>
+  <strong>{titulo}</strong> <slot />
+</p>
+
+<style>
+  .nota {
+    padding: 0.9rem 1.15rem;
+    border: 1px dashed var(--borde-coral);
+    border-radius: 14px;
+    background: var(--velo-coral);
+    color: var(--texto-suave);
+    font-size: var(--t--1);
+    max-width: 62ch;
+  }
+
+  strong {
+    color: var(--coral);
+    font-weight: 600;
+  }
+</style>

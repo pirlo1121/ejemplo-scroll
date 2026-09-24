@@ -1,0 +1,44 @@
+---
+/** Métricas del estudio (datos/cifras.ts → cifrasEstudio). */
+import Contador from '@/components/compartidos/Contador.astro';
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import { cifrasEstudio } from '@/datos/cifras';
+---
+
+<div class="metricas">
+  {cifrasEstudio.map((cifra) => (
+    <div class="metrica" data-revelar>
+      <Contador cifra={cifra} />
+      <span>
+        {cifra.descripcion} {cifra.ejemplo && <SelloEjemplo>Ejemplo</SelloEjemplo>}
+      </span>
+    </div>
+  ))}
+</div>
+
+<style>
+  .metricas {
+    display: grid;
+    gap: 1px;
+    border-block: 1px solid var(--linea);
+    background: var(--linea);
+  }
+
+  .metrica {
+    display: grid;
+    gap: 0.4rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: var(--fondo);
+  }
+
+  span {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  @media (min-width: 46rem) {
+    .metricas {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

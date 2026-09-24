@@ -1,0 +1,122 @@
+---
+/**
+ * Panel de navegación para pantallas pequeñas. Empieza inerte y oculto;
+ * nucleo/menu.ts lo abre, atrapa el foco y lo cierra con Escape.
+ */
+import { contacto, navegacion, sitio } from '@/config/sitio';
+import { esPaginaActual } from '@/utilidades/rutas';
+
+const ruta = Astro.url.pathname;
+---
+
+<div class="menu" id="menu" data-menu data-abierto="false" data-lenis-prevent inert>
+  <nav aria-label="Navegación del menú">
+    <ul class="lista">
+      {navegacion.map(({ etiqueta, href }, i) => (
+        <li class="item">
+          <a href={href} aria-current={esPaginaActual(href, ruta) ? 'page' : undefined}>
+            {etiqueta} <span>{String(i + 1).padStart(2, '0')}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <div class="pie">
+    <a href={`mailto:${contacto.correo}`}>{contacto.correo}</a>
+    <a href={contacto.whatsapp.href}>WhatsApp</a>
+    <span>{sitio.ciudad.split(',')[0]} · trabajo remoto</span>
+  </div>
+</div>
+
+<style>
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--capa-menu);
+    display: grid;
+    align-content: center;
+    gap: 2rem;
+    padding: 7rem var(--gutter) 3rem;
+    background: var(--tinta);
+    overflow-y: auto;
+    visibility: hidden;
+    clip-path: inset(0 0 100% 0);
+    transition:
+      clip-path 0.75s var(--curva),
+      visibility 0s 0.75s;
+  }
+
+  .menu[data-abierto='true'] {
+    visibility: visible;
+    clip-path: inset(0);
+    transition:
+      clip-path 0.75s var(--curva),
+      visibility 0s;
+  }
+
+  .lista {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .item {
+    overflow: hidden;
+    border-bottom: 1px solid var(--linea);
+  }
+
+  .item a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.35em 0.2em;
+    font-family: var(--display);
+    font-size: clamp(2.2rem, 9vw, 4.5rem);
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    transform: translateY(110%);
+    transition:
+      transform 0.7s var(--curva),
+      color var(--rapido);
+  }
+
+  .menu[data-abierto='true'] .item a {
+    transform: none;
+  }
+
+  /* Los enlaces entran escalonados al abrir. */
+  .menu[data-abierto='true'] .item:nth-child(1) a {
+    transition-delay: 0.12s;
+  }
+  .menu[data-abierto='true'] .item:nth-child(2) a {
+    transition-delay: 0.175s;
+  }
+  .menu[data-abierto='true'] .item:nth-child(3) a {
+    transition-delay: 0.23s;
+  }
+  .menu[data-abierto='true'] .item:nth-child(4) a {
+    transition-delay: 0.285s;
+  }
+  .menu[data-abierto='true'] .item:nth-child(5) a {
+    transition-delay: 0.34s;
+  }
+
+  .item a:hover,
+  .item a[aria-current='page'] {
+    color: var(--acento);
+  }
+
+  .item span {
+    font-family: var(--texto-fuente);
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  .pie {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    color: var(--texto-suave);
+    font-size: var(--t--1);
+  }
+</style>

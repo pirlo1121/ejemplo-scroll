@@ -1,0 +1,95 @@
+---
+/**
+ * Portafolio filtrable. Los botones de filtro son la única parte interactiva
+ * (funciones/filtros.ts); sin JavaScript se ven todos los proyectos.
+ */
+import TarjetaDeProyecto from './TarjetaDeProyecto.astro';
+import { filtros, proyectos } from '@/datos/proyectos';
+---
+
+<div class="filtros" data-filtros role="group" aria-label="Filtrar proyectos por servicio">
+  {filtros.map(({ id, etiqueta }) => (
+    <button
+      class="filtro"
+      type="button"
+      data-filtro={id}
+      aria-pressed={id === 'todo' ? 'true' : 'false'}
+    >
+      {etiqueta}
+    </button>
+  ))}
+</div>
+<p class="solo-lectores" data-anuncio-filtro aria-live="polite"></p>
+
+<div class="indice" data-indice-proyectos>
+  {proyectos.map((proyecto) => (
+    <TarjetaDeProyecto proyecto={proyecto} />
+  ))}
+</div>
+
+<p class="vacio" data-vacio hidden>
+  No hay proyectos de ese tipo publicados todavía. Prueba con otro filtro.
+</p>
+
+<script>
+  import { iniciarFiltros } from '@/scripts/funciones/filtros';
+  iniciarFiltros();
+</script>
+
+<style>
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .filtro {
+    padding: 0.55rem 1.1rem;
+    border: 1px solid var(--linea);
+    border-radius: 100px;
+    background: none;
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+    cursor: pointer;
+    transition:
+      color var(--rapido),
+      border-color var(--rapido),
+      background-color var(--rapido);
+  }
+
+  .filtro:hover {
+    color: var(--texto);
+    border-color: var(--linea-fuerte);
+  }
+
+  .filtro[aria-pressed='true'] {
+    background: var(--nube);
+    border-color: var(--nube);
+    color: var(--tinta);
+  }
+
+  .indice {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+
+  .vacio {
+    padding: 4rem 0;
+    margin-inline: auto;
+    color: var(--texto-suave);
+    text-align: center;
+  }
+
+  /* Rejilla escalonada: la segunda columna baja un poco. */
+  @media (min-width: 56rem) {
+    .indice {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .indice > :global(:nth-child(4n + 2)),
+    .indice > :global(:nth-child(4n + 3)) {
+      margin-top: clamp(2rem, 7vw, 6rem);
+    }
+  }
+</style>

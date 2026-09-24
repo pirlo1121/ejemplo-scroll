@@ -1,0 +1,65 @@
+---
+/** Perfiles del equipo (datos/nosotros.ts → equipo). */
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import { equipo } from '@/datos/nosotros';
+---
+
+<div class="malla malla--3">
+  {equipo.map(({ nombre, rol, ejemplo }) => (
+    <article class="persona" data-revelar>
+      <span class="avatar" aria-hidden="true">
+        ··
+      </span>
+      <div class="texto">
+        <h3>{nombre}</h3>
+        <p>{rol}</p>
+        {ejemplo && <SelloEjemplo>Perfil de ejemplo</SelloEjemplo>}
+      </div>
+    </article>
+  ))}
+</div>
+
+<style>
+  .persona {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--linea);
+    border-radius: 18px;
+    background: var(--superficie);
+    transition:
+      translate var(--medio),
+      border-color var(--medio);
+  }
+
+  .persona:hover {
+    translate: 0 -6px;
+    border-color: var(--linea-fuerte);
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--savia);
+    font-family: var(--display);
+    font-size: 1.35rem;
+    color: var(--tinta);
+  }
+
+  .texto {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  h3 {
+    font-size: var(--t-1);
+  }
+
+  p {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+</style>

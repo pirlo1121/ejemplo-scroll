@@ -1,0 +1,39 @@
+---
+/** Lista de preguntas con su respuesta siempre visible. */
+import type { Pregunta } from '@/datos/preguntas';
+
+interface Props {
+  preguntas: Pregunta[];
+}
+
+const { preguntas } = Astro.props;
+---
+
+<div class="preguntas">
+  {preguntas.map(({ pregunta, respuesta }) => (
+    <div class="pregunta" data-revelar>
+      <h3>{pregunta}</h3>
+      <p>{respuesta}</p>
+    </div>
+  ))}
+</div>
+
+<style>
+  .preguntas {
+    border-top: 1px solid var(--linea);
+  }
+
+  .pregunta {
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--linea);
+  }
+
+  h3 {
+    margin-bottom: 0.5rem;
+    font-size: var(--t-1);
+  }
+
+  p {
+    color: var(--texto-suave);
+  }
+</style>

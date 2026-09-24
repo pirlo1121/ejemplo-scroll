@@ -1,0 +1,28 @@
+---
+/**
+ * Titular que entra línea a línea al aparecer en pantalla.
+ * Las líneas se separan aquí, en el servidor: el navegador recibe el
+ * marcado final y el script solo añade .es-visible (revelado.ts).
+ *
+ * Cada línea admite <em> para el énfasis. Es texto escrito por el equipo,
+ * nunca contenido de usuarios, por eso se inserta con set:html.
+ */
+interface Props {
+  lineas: string[];
+  nivel?: 'h1' | 'h2';
+  id?: string;
+  class?: string;
+}
+
+const { lineas, nivel: Etiqueta = 'h2', id, class: clase } = Astro.props;
+---
+
+<Etiqueta id={id} class={clase} data-lineas>
+  {lineas.map((linea) => (
+    <>
+      <span class="linea-texto">
+        <span set:html={linea} />
+      </span>{' '}
+    </>
+  ))}
+</Etiqueta>

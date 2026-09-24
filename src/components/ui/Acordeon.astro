@@ -1,0 +1,99 @@
+---
+/** Preguntas desplegables con <details>/<summary>: accesibles y sin JavaScript. */
+import type { Pregunta } from '@/datos/preguntas';
+
+interface Props {
+  preguntas: Pregunta[];
+}
+
+const { preguntas } = Astro.props;
+---
+
+<div class="acordeon">
+  {preguntas.map(({ pregunta, respuesta }) => (
+    <details class="item">
+      <summary>
+        {pregunta}
+        <span class="cruz" aria-hidden="true" />
+      </summary>
+      <p>{respuesta}</p>
+    </details>
+  ))}
+</div>
+
+<style>
+  .acordeon {
+    border-top: 1px solid var(--linea);
+  }
+
+  .item {
+    border-bottom: 1px solid var(--linea);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: clamp(1.25rem, 3vw, 2rem);
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--display);
+    font-size: var(--t-2);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    transition: color var(--rapido);
+  }
+
+  /* Oculta el triángulo por defecto en Safari y Chrome. */
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:hover {
+    color: var(--acento);
+  }
+
+  summary:focus-visible {
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .cruz {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    position: relative;
+  }
+
+  .cruz::before,
+  .cruz::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform var(--rapido);
+  }
+
+  .cruz::after {
+    transform: rotate(90deg);
+  }
+
+  .item[open] .cruz::after {
+    transform: rotate(0deg);
+  }
+
+  p {
+    color: var(--texto-suave);
+    padding-bottom: 1.75rem;
+    animation: desplegar 0.4s var(--curva);
+  }
+
+  @keyframes desplegar {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+</style>

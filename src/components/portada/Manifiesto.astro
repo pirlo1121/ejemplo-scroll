@@ -1,0 +1,95 @@
+---
+/**
+ * Capítulo 2 · El ecosistema. Las partículas forman una esfera.
+ * Con movimiento, la sección es alta y su marco queda fijo mientras las
+ * palabras se encienden una a una (scripts/historia/manifiesto.ts).
+ *
+ * Las palabras se separan aquí, en el servidor. Los lectores de pantalla
+ * reciben la frase completa; las piezas sueltas son solo visuales.
+ */
+import Rotulo from '@/components/ui/Rotulo.astro';
+
+const texto =
+  'Una presencia digital sana funciona como un ecosistema: el sitio atrae, la automatización responde, el producto retiene, el contenido sostiene y la marca le da sentido a todo lo demás.';
+const palabras = texto.split(' ');
+---
+
+<section
+  class="manifiesto"
+  id="manifiesto"
+  aria-label="Nuestra forma de ver el trabajo digital"
+  data-escena="esfera"
+  data-progreso="fija"
+  data-manifiesto
+>
+  <div class="marco">
+    <div class="envoltura">
+      <Rotulo numero="02">Manifiesto</Rotulo>
+      <p class="texto">
+        <span class="solo-lectores">{texto}</span>
+        <span aria-hidden="true">
+          {palabras.map((palabra) => (
+            <>
+              <span class="palabra">{palabra}</span>{' '}
+            </>
+          ))}
+        </span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { iniciarManifiesto } from '@/scripts/historia/manifiesto';
+  iniciarManifiesto();
+</script>
+
+<style>
+  .manifiesto {
+    padding-block: var(--bloque);
+  }
+
+  .texto {
+    margin-top: 1.25rem;
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(1.7rem, 3.6vw, 3.4rem);
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+    max-width: 24ch;
+  }
+
+  .palabra {
+    transition:
+      color 0.5s ease,
+      text-shadow 0.5s ease;
+  }
+
+  /* Con movimiento: sección alta, marco fijo y palabras apagadas hasta su turno. */
+  :global(.movimiento) .manifiesto {
+    height: 260vh;
+    padding: 0;
+  }
+
+  :global(.movimiento) .marco {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: grid;
+    align-items: center;
+  }
+
+  :global(.movimiento) .texto {
+    transform: scale(calc(0.96 + var(--p, 0) * 0.04));
+    transform-origin: 0 50%;
+  }
+
+  :global(.movimiento) .palabra {
+    color: rgb(233 239 251 / 0.14);
+  }
+
+  :global(.movimiento) .palabra.encendida {
+    color: var(--texto);
+    text-shadow: 0 0 28px rgb(90 210 255 / 0.25);
+  }
+</style>

@@ -1,0 +1,24 @@
+---
+/**
+ * Cifra que cuenta desde 0 al entrar en pantalla (scripts/funciones/contadores.ts).
+ * El HTML ya trae el valor final: sin JavaScript o sin movimiento, se lee igual.
+ */
+import type { Cifra } from '@/datos/cifras';
+
+interface Props {
+  cifra: Cifra;
+  class?: string;
+}
+
+const { cifra, class: clase } = Astro.props;
+---
+
+<span class:list={['cifra', clase]} data-contador={cifra.valor} data-sufijo={cifra.sufijo}>
+  {cifra.valor}
+  {cifra.sufijo}
+</span>
+
+<script>
+  import { iniciarContadores } from '@/scripts/funciones/contadores';
+  iniciarContadores();
+</script>

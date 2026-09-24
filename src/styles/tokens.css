@@ -1,0 +1,74 @@
+/* ==========================================================================
+   tokens.css
+   Única fuente de colores, tipografía, escala, ritmo y movimiento.
+   Ningún componente escribe un color literal si aquí existe un token.
+   ========================================================================== */
+
+:root {
+  /* --- Pigmentos: noche azul ------------------------------------------- */
+  --tinta: #04070f;
+  --tinta-alta: #0a1122;
+  --tinta-media: #121c38;
+  --nube: #e9effb;
+  --niebla: #9dabc9;
+  --indigo: #5b6bff;
+  --azul: #2f7dff;
+  --azul-profundo: #1b2f8a;
+  --cian: #5ad2ff;
+  --hielo: #bfe9ff;
+  --coral: #ff7a6b; /* solo avisos, errores y contenido de ejemplo */
+  --coral-claro: #ff9c90;
+
+  /* --- Roles ------------------------------------------------------------ */
+  --fondo: var(--tinta);
+  --superficie: var(--tinta-alta);
+  --texto: var(--nube);
+  --texto-suave: var(--niebla);
+  --acento: var(--cian);
+  --linea: rgb(201 219 255 / 0.1);
+  --linea-fuerte: rgb(201 219 255 / 0.24);
+  --savia: linear-gradient(115deg, var(--indigo), var(--azul) 40%, var(--cian) 75%, var(--hielo));
+  --brillo-cian: rgb(90 210 255 / 0.55);
+  --velo-coral: rgb(255 122 107 / 0.07);
+  --borde-coral: rgb(255 122 107 / 0.55);
+
+  /* --- Tipografía --------------------------------------------------------
+     Las variables --fuente-* las define la API de fuentes de Astro
+     (astro.config.mjs), ya con sus respaldos de métricas ajustadas. */
+  --display: var(--fuente-display);
+  --acento-fuente: var(--fuente-acento);
+  --texto-fuente: var(--fuente-texto);
+
+  /* Escala modular 1.25 sobre 17px */
+  --t--1: 0.82rem;
+  --t-0: 1.0625rem;
+  --t-1: 1.3rem;
+  --t-2: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem);
+  --t-3: clamp(2rem, 1.3rem + 3vw, 3.4rem);
+  --t-4: clamp(2.6rem, 1.2rem + 6vw, 5.6rem);
+  --t-5: clamp(3.2rem, 0.6rem + 10vw, 9rem);
+
+  /* --- Ritmo ------------------------------------------------------------ */
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --ancho: 84rem;
+  --bloque: clamp(5rem, 11vh, 9.5rem);
+  --alto-cabecera: 4.5rem;
+
+  /* --- Movimiento ------------------------------------------------------- */
+  --curva: cubic-bezier(0.22, 1, 0.36, 1);
+  --rapido: 0.28s var(--curva);
+  --medio: 0.6s var(--curva);
+
+  /* --- Capas (z-index) --------------------------------------------------- */
+  --capa-escena: 0;
+  --capa-contenido: 1;
+  --capa-indice: 40;
+  --capa-menu: 45;
+  --capa-cabecera: 50;
+  --capa-grano: 60;
+  --capa-progreso: 70;
+  --capa-cursor: 80;
+  --capa-salto: 100;
+
+  color-scheme: dark;
+}

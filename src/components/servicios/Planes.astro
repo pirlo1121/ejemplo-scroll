@@ -1,0 +1,57 @@
+---
+/** Tres formas de trabajar juntos (precios de ejemplo en datos/planes.ts). */
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import type { Plan } from '@/datos/planes';
+
+interface Props {
+  planes: Plan[];
+}
+
+const { planes } = Astro.props;
+---
+
+<div class="malla malla--3">
+  {planes.map((plan) => (
+    <article class:list={['plan', { destacado: plan.destacado }]} data-revelar>
+      <h3>{plan.nombre}</h3>
+      <p class="precio">{plan.precio}</p>
+      {plan.ejemplo && <SelloEjemplo>Precio de ejemplo</SelloEjemplo>}
+      <p class="suave">{plan.resumen}</p>
+      <ul>
+        {plan.incluye.map((punto) => (
+          <li>{punto}</li>
+        ))}
+      </ul>
+    </article>
+  ))}
+</div>
+
+<style>
+  .plan {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border: 1px solid var(--linea);
+    border-radius: 20px;
+    background: var(--superficie);
+  }
+
+  .destacado {
+    border-color: rgb(90 210 255 / 0.45);
+    background: linear-gradient(180deg, rgb(90 210 255 / 0.07), var(--superficie) 55%);
+  }
+
+  .precio {
+    font-family: var(--display);
+    font-size: var(--t-3);
+    letter-spacing: -0.04em;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.6rem;
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+</style>

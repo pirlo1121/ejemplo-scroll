@@ -1,0 +1,1 @@
+function e(e){return Math.min(Math.max(e,0),1)}function t(e){return e*e*(3-2*e)}function n(e,t,n){return e+(t-e)*n}export{n,t as r,e as t};

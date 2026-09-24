@@ -1,0 +1,126 @@
+---
+/** Pie de página común: marca, navegación, contacto y enlaces legales. */
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import { contacto, enlacesLegales, navegacion, sitio } from '@/config/sitio';
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie" data-pie>
+  <div class="envoltura">
+    <p class="titular">{sitio.nombre}</p>
+
+    <div class="malla">
+      <p class="suave">{sitio.resumen}</p>
+
+      <div>
+        <h2 class="columna-titulo">Navegación</h2>
+        <ul>
+          {navegacion.map(({ etiqueta, href }) => (
+            <li>
+              <a href={href}>{etiqueta}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="columna-titulo">Contacto</h2>
+        <ul>
+          <li>
+            <a href={`mailto:${contacto.correo}`}>{contacto.correo}</a>
+          </li>
+          <li>
+            <a href={contacto.whatsapp.href}>{contacto.whatsapp.etiqueta}</a>
+          </li>
+          {contacto.redes.map(({ etiqueta, href }) => (
+            <li>
+              <a href={href}>{etiqueta}</a>
+            </li>
+          ))}
+        </ul>
+        {contacto.ejemplo && <SelloEjemplo>Datos de contacto de ejemplo</SelloEjemplo>}
+      </div>
+    </div>
+
+    <div class="base">
+      <span>
+        © {anio} {sitio.nombre}. {sitio.ciudad}.
+      </span>
+      <span class="legales">
+        {enlacesLegales.map(({ etiqueta, href }) => (
+          <a class="enlace-subrayado" href={href}>
+            {etiqueta}
+          </a>
+        ))}
+      </span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .pie {
+    position: relative;
+    z-index: var(--capa-contenido);
+    padding-block: clamp(3rem, 8vw, 5.5rem) 2rem;
+    border-top: 1px solid var(--linea);
+    background:
+      radial-gradient(60rem 26rem at 12% 0%, rgb(47 125 255 / 0.14), transparent 70%), var(--fondo);
+  }
+
+  .titular {
+    margin-bottom: 2rem;
+    font-family: var(--display);
+    font-size: var(--t-4);
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+  }
+
+  .malla {
+    display: grid;
+    gap: 2.5rem;
+    margin-block: 3rem;
+  }
+
+  .columna-titulo {
+    margin-bottom: 1rem;
+    font-size: var(--t-1);
+    letter-spacing: -0.01em;
+  }
+
+  li {
+    margin-bottom: 0.55rem;
+  }
+
+  li a {
+    color: var(--texto-suave);
+    transition: color var(--rapido);
+  }
+
+  li a:hover {
+    color: var(--texto);
+  }
+
+  .base {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--linea);
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  .legales {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 52rem) {
+    .malla {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+</style>

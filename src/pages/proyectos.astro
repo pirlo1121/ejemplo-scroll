@@ -1,0 +1,51 @@
+---
+import CasoDestacado from '@/components/proyectos/CasoDestacado.astro';
+import IndiceDeProyectos from '@/components/proyectos/IndiceDeProyectos.astro';
+import Boton from '@/components/ui/Boton.astro';
+import CabeceraDeSeccion from '@/components/ui/CabeceraDeSeccion.astro';
+import NotaEjemplo from '@/components/ui/NotaEjemplo.astro';
+import TituloEnLineas from '@/components/ui/TituloEnLineas.astro';
+import Base from '@/layouts/Base.astro';
+import { casoDestacado, proyectos } from '@/datos/proyectos';
+
+const hayEjemplos = casoDestacado.ejemplo || proyectos.some((proyecto) => proyecto.ejemplo);
+---
+
+<Base
+  titulo="Proyectos · JAPH"
+  descripcion="Casos de JAPH en web, apps, automatización, marketing, video y marca."
+>
+  <section class="envoltura portada-pagina" aria-labelledby="titulo-proyectos">
+    <TituloEnLineas
+      nivel="h1"
+      id="titulo-proyectos"
+      lineas={['Trabajo reciente,', 'contado con <em>resultados</em>.']}
+    />
+    <p class="plomo" data-revelar>
+      Filtra por el tipo de trabajo que te interesa y mira cómo abordamos cada reto.
+    </p>
+    {hayEjemplos && (
+      <NotaEjemplo titulo="Portafolio de ejemplo.">
+        Los seis casos y el caso destacado de esta página son marcadores de posición para mostrar la
+        maqueta. Reemplázalos por proyectos reales, con permiso del cliente, antes de publicar el
+        sitio.
+      </NotaEjemplo>
+    )}
+  </section>
+
+  <section class="envoltura" aria-label="Portafolio">
+    <IndiceDeProyectos />
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-caso">
+    <div class="envoltura">
+      <CabeceraDeSeccion id="titulo-caso" titulo="Un caso en detalle" />
+      <CasoDestacado />
+      <p class="accion-final" data-revelar>
+        <Boton href="/contacto" variante="solido" magnetico>
+          Contar mi caso
+        </Boton>
+      </p>
+    </div>
+  </section>
+</Base>

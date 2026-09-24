@@ -1,0 +1,192 @@
+---
+/**
+ * Legal.astro
+ * Estructura de las páginas legales: índice lateral fijo, aviso de
+ * plantilla y cuerpo de lectura larga. El contenido llega por el slot.
+ *
+ * Slots:
+ *   aviso    el aviso de "plantilla, revisar con un abogado"
+ *   default  las secciones del documento (<section id="…">)
+ */
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import Base from './Base.astro';
+
+export interface EntradaDeIndice {
+  id: string;
+  etiqueta: string;
+}
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  encabezado: string;
+  actualizacion: string;
+  fechaDeEjemplo?: boolean;
+  indice: EntradaDeIndice[];
+}
+
+const {
+  titulo,
+  descripcion,
+  encabezado,
+  actualizacion,
+  fechaDeEjemplo = false,
+  indice
+} = Astro.props;
+---
+
+<Base titulo={titulo} descripcion={descripcion}>
+  <div class="envoltura legal">
+    <aside class="indice" aria-label="Índice del documento" data-indice-legal>
+      <p class="fecha">
+        Última actualización: {actualizacion}
+        {fechaDeEjemplo && <SelloEjemplo>Fecha de ejemplo</SelloEjemplo>}
+      </p>
+      <ol>
+        {indice.map(({ id, etiqueta }) => (
+          <li>
+            <a href={`#${id}`}>{etiqueta}</a>
+          </li>
+        ))}
+      </ol>
+    </aside>
+
+    <article class="cuerpo">
+      <h1>{encabezado}</h1>
+      <div class="aviso" role="note">
+        <slot name="aviso" />
+      </div>
+      <slot />
+    </article>
+  </div>
+</Base>
+
+<script>
+  import { iniciarIndiceLegal } from '@/scripts/funciones/indice-legal';
+  iniciarIndiceLegal();
+</script>
+
+<style>
+  .legal {
+    display: grid;
+    gap: 3rem;
+    padding-block: clamp(9rem, 20vh, 13rem) var(--bloque);
+  }
+
+  h1 {
+    margin-bottom: 0.75rem;
+    font-size: var(--t-3);
+  }
+
+  .fecha {
+    display: grid;
+    gap: 0.4rem;
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  .indice ol {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+  }
+
+  .indice a {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+    transition: color var(--rapido);
+  }
+
+  .indice a:hover,
+  .indice a[aria-current] {
+    color: var(--texto);
+  }
+
+  /* Aviso de plantilla: se repite arriba de cada documento para que nadie lo
+     publique sin haberlo revisado antes. */
+  .aviso {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 68ch;
+    margin-block: 1.5rem 2.5rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px dashed var(--borde-coral);
+    border-radius: 14px;
+    background: var(--velo-coral);
+    color: var(--texto-suave);
+    font-size: var(--t--1);
+    line-height: 1.6;
+  }
+
+  .aviso :global(strong) {
+    color: var(--coral);
+    font-weight: 600;
+  }
+
+  /* El contenido del slot pertenece a la página: se estiliza con :global. */
+  .cuerpo {
+    max-width: 68ch;
+  }
+
+  .cuerpo :global(section) {
+    padding-block: 2rem;
+    border-top: 1px solid var(--linea);
+  }
+
+  .cuerpo :global(section:first-of-type) {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .cuerpo :global(h2) {
+    margin-bottom: 0.9rem;
+    font-size: var(--t-1);
+    letter-spacing: -0.01em;
+  }
+
+  .cuerpo :global(section p) {
+    margin-bottom: 1rem;
+    color: var(--texto-suave);
+    line-height: 1.7;
+  }
+
+  .cuerpo :global(section ul) {
+    display: grid;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    color: var(--texto-suave);
+  }
+
+  .cuerpo :global(section li) {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+
+  .cuerpo :global(section li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--linea-fuerte);
+  }
+
+  .cuerpo :global(section a) {
+    color: var(--acento);
+  }
+
+  @media (min-width: 62rem) {
+    .legal {
+      grid-template-columns: 16rem 1fr;
+      gap: 4.5rem;
+      align-items: start;
+    }
+
+    .indice {
+      position: sticky;
+      top: 18vh;
+    }
+  }
+</style>

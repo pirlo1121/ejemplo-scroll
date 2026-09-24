@@ -1,0 +1,46 @@
+---
+/**
+ * Portada: una historia en ocho capítulos. Cada capítulo declara la figura
+ * de la escena de fondo con data-escena; el orden de este archivo es el
+ * orden de la historia.
+ */
+import Cifras from '@/components/portada/Cifras.astro';
+import Cinta from '@/components/portada/Cinta.astro';
+import Escena from '@/components/portada/Escena.astro';
+import Heroe from '@/components/portada/Heroe.astro';
+import IndiceDeCapitulos, { type Capitulo } from '@/components/portada/IndiceDeCapitulos.astro';
+import LlamadaFinal from '@/components/portada/LlamadaFinal.astro';
+import Manifiesto from '@/components/portada/Manifiesto.astro';
+import PilaDeServicios from '@/components/portada/PilaDeServicios.astro';
+import Proceso from '@/components/portada/Proceso.astro';
+import ProyectosDestacados from '@/components/portada/ProyectosDestacados.astro';
+import Testimonios from '@/components/portada/Testimonios.astro';
+import Base from '@/layouts/Base.astro';
+import { sitio } from '@/config/sitio';
+
+const capitulos: Capitulo[] = [
+  { id: 'inicio', nombre: 'Inicio' },
+  { id: 'manifiesto', nombre: 'Manifiesto' },
+  { id: 'servicios', nombre: 'Servicios' },
+  { id: 'proceso', nombre: 'Proceso' },
+  { id: 'proyectos-destacados', nombre: 'Proyectos' },
+  { id: 'estadisticas', nombre: 'Números' },
+  { id: 'testimonios', nombre: 'Testimonios' },
+  { id: 'llamada', nombre: 'Contacto' }
+];
+---
+
+<Base titulo={`${sitio.nombre} · ${sitio.lema}`} descripcion={sitio.descripcion}>
+  <Escena slot="fondo" />
+  <IndiceDeCapitulos slot="fuera" capitulos={capitulos} />
+
+  <Heroe />
+  <Cinta />
+  <Manifiesto />
+  <PilaDeServicios />
+  <Proceso />
+  <ProyectosDestacados />
+  <Cifras />
+  <Testimonios />
+  <LlamadaFinal />
+</Base>

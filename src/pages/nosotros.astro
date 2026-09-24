@@ -1,0 +1,98 @@
+---
+import Equipo from '@/components/nosotros/Equipo.astro';
+import LineaDeTiempo from '@/components/nosotros/LineaDeTiempo.astro';
+import Metricas from '@/components/nosotros/Metricas.astro';
+import Principios from '@/components/nosotros/Principios.astro';
+import Retrato from '@/components/nosotros/Retrato.astro';
+import Boton from '@/components/ui/Boton.astro';
+import CabeceraDeSeccion from '@/components/ui/CabeceraDeSeccion.astro';
+import NotaEjemplo from '@/components/ui/NotaEjemplo.astro';
+import TituloEnLineas from '@/components/ui/TituloEnLineas.astro';
+import Base from '@/layouts/Base.astro';
+import { cifrasEstudio } from '@/datos/cifras';
+import { equipo, hitosEjemplo } from '@/datos/nosotros';
+
+const cifrasDeEjemplo = cifrasEstudio.some((cifra) => cifra.ejemplo);
+const equipoDeEjemplo = equipo.some((persona) => persona.ejemplo);
+---
+
+<Base
+  titulo="Nosotros · JAPH"
+  descripcion="El equipo, la historia y los principios de JAPH, agencia de ecosistemas digitales."
+>
+  <section class="envoltura portada-pagina" aria-labelledby="titulo-nosotros">
+    <TituloEnLineas
+      nivel="h1"
+      id="titulo-nosotros"
+      lineas={['Un equipo pequeño', 'con <em>obsesiones grandes</em>.']}
+    />
+    <p class="plomo" data-revelar>
+      JAPH es un estudio de diseño y desarrollo que trabaja por sistemas completos. Preferimos
+      entender un negocio a fondo antes de proponer una sola pantalla.
+    </p>
+    <Retrato />
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-cifras">
+    <div class="envoltura bloque">
+      <h2 class="solo-lectores" id="titulo-cifras">
+        JAPH en cifras
+      </h2>
+      {cifrasDeEjemplo && (
+        <NotaEjemplo titulo="Cifras de ejemplo.">
+          Completa cada dato con información real y verificable, o elimina este bloque si todavía no
+          tienes métricas que publicar.
+        </NotaEjemplo>
+      )}
+      <Metricas />
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-principios">
+    <div class="envoltura">
+      <CabeceraDeSeccion id="titulo-principios" titulo="En qué creemos" />
+      <Principios />
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-historia">
+    <div class="envoltura malla malla--asimetrica">
+      <div class="bloque">
+        <h2 id="titulo-historia" data-revelar>
+          Nuestra historia
+        </h2>
+        {hitosEjemplo && (
+          <NotaEjemplo titulo="Línea de tiempo de ejemplo.">
+            Reemplaza cada hito por fechas y acontecimientos reales del estudio.
+          </NotaEjemplo>
+        )}
+      </div>
+      <LineaDeTiempo />
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-equipo">
+    <div class="envoltura">
+      <CabeceraDeSeccion id="titulo-equipo" titulo="Quién estará en tu proyecto">
+        {equipoDeEjemplo && (
+          <NotaEjemplo titulo="Perfiles de ejemplo.">
+            Sustituye nombres, cargos y descripciones por los del equipo real antes de publicar.
+          </NotaEjemplo>
+        )}
+      </CabeceraDeSeccion>
+      <Equipo />
+      <p class="accion-final" data-revelar>
+        <Boton href="/contacto" variante="solido" magnetico>
+          Hablar con el equipo
+        </Boton>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .bloque {
+    display: grid;
+    gap: 2rem;
+  }
+</style>

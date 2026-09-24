@@ -1,0 +1,94 @@
+---
+/**
+ * Botón o enlace con forma de botón. Con `href` es un <a>; sin él, un <button>.
+ * `magnetico` hace que se acerque al puntero (ver scripts/nucleo/cursor.ts).
+ */
+interface Props {
+  href?: string;
+  variante?: 'contorno' | 'solido';
+  tipo?: 'button' | 'submit';
+  /** true para la fuerza por defecto o un número (0.18, 0.22…). */
+  magnetico?: boolean | number;
+  class?: string;
+}
+
+const {
+  href,
+  variante = 'contorno',
+  tipo = 'button',
+  magnetico = false,
+  class: clase
+} = Astro.props;
+
+const clases = ['boton', `boton--${variante}`, clase];
+const atributoMagnetico =
+  magnetico === false ? undefined : magnetico === true ? '' : String(magnetico);
+---
+
+{href ? (
+  <a class:list={clases} href={href} data-magnetico={atributoMagnetico}>
+    <slot />
+  </a>
+) : (
+  <button class:list={clases} type={tipo} data-magnetico={atributoMagnetico}>
+    <slot />
+  </button>
+)}
+
+<style>
+  .boton {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.95rem 1.7rem;
+    border: 1px solid var(--linea-fuerte);
+    border-radius: 100px;
+    background: transparent;
+    color: var(--texto);
+    font-size: var(--t--1);
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      color var(--rapido),
+      border-color var(--rapido),
+      translate 0.5s var(--curva);
+  }
+
+  /* Relleno con el degradado de la marca que sube al pasar el cursor. */
+  .boton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--savia);
+    transform: translateY(101%);
+    transition: transform 0.5s var(--curva);
+  }
+
+  .boton:hover {
+    color: var(--tinta);
+    border-color: transparent;
+  }
+
+  .boton:hover::before {
+    transform: translateY(0);
+  }
+
+  .boton--solido {
+    background: var(--nube);
+    color: var(--tinta);
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .boton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .boton:disabled::before {
+    transform: translateY(101%);
+  }
+</style>

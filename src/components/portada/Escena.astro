@@ -1,0 +1,51 @@
+---
+/**
+ * Escena de fondo de la portada: partículas que cambian de figura en cada
+ * capítulo (scripts/historia/escena). Mientras carga, o si el dispositivo no
+ * la dibuja, queda un degradado azul profundo.
+ */
+---
+
+<div class="escena" aria-hidden="true">
+  <canvas class="lienzo" data-escena-lienzo></canvas>
+  <div class="velo"></div>
+</div>
+
+<script>
+  import { iniciarEscena } from '@/scripts/historia/escena/cargador';
+  iniciarEscena();
+</script>
+
+<style>
+  .escena {
+    position: fixed;
+    inset: 0;
+    z-index: var(--capa-escena);
+    pointer-events: none;
+    background:
+      radial-gradient(50rem 34rem at 78% 28%, rgb(47 125 255 / 0.16), transparent 70%),
+      radial-gradient(40rem 30rem at 12% 88%, rgb(91 107 255 / 0.12), transparent 70%), var(--fondo);
+  }
+
+  .lienzo {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.6s var(--curva);
+  }
+
+  .lienzo.esta-lista {
+    opacity: 1;
+  }
+
+  :global(.sin-escena) .lienzo {
+    display: none;
+  }
+
+  /* Viñeta: oscurece los bordes para que el texto nunca compita con las partículas. */
+  .velo {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgb(4 7 15 / 0.75) 100%);
+  }
+</style>

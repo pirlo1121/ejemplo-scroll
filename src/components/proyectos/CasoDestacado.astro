@@ -1,0 +1,79 @@
+---
+/** Un caso contado en detalle (datos/proyectos.ts → casoDestacado). */
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import { casoDestacado as caso } from '@/datos/proyectos';
+---
+
+<div class="caso" data-revelar>
+  <div>
+    <h3>{caso.titulo}</h3>
+    {caso.ejemplo && <SelloEjemplo>Caso de ejemplo</SelloEjemplo>}
+    <p class="suave relato">{caso.relato}</p>
+    <div class="datos">
+      {caso.indicadores.map(({ cifra, etiqueta }) => (
+        <div>
+          <p class="cifra">{cifra}</p>
+          <span>
+            {etiqueta} {caso.ejemplo && <SelloEjemplo>Ejemplo</SelloEjemplo>}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+  <div class="lienzo" data-parallax="0.04" aria-hidden="true"></div>
+</div>
+
+<script>
+  import { iniciarParallax } from '@/scripts/funciones/parallax';
+  iniciarParallax();
+</script>
+
+<style>
+  .caso {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+    padding: clamp(1.75rem, 4vw, 3.5rem);
+    border: 1px solid var(--linea);
+    border-radius: 28px;
+    background: linear-gradient(140deg, var(--tinta-media), var(--fondo) 65%);
+  }
+
+  h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .relato {
+    margin-top: 1rem;
+  }
+
+  .datos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+    margin-top: 2rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--linea);
+  }
+
+  .datos span {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  .lienzo {
+    aspect-ratio: 1;
+    border: 1px solid var(--linea);
+    border-radius: 20px;
+    background:
+      radial-gradient(circle at 30% 25%, rgb(91 107 255 / 0.35), transparent 55%),
+      radial-gradient(circle at 70% 70%, rgb(90 210 255 / 0.35), transparent 55%), var(--tinta-alta);
+    translate: 0 var(--desfase, 0);
+  }
+
+  @media (min-width: 62rem) {
+    .caso {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+/**
+ * Ficha de un proyecto del portafolio. Con imagen real usa <Image> (AVIF/WebP,
+ * varios tamaños, carga diferida); sin ella, un degradado provisional.
+ */
+import { Image } from 'astro:assets';
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import type { Proyecto } from '@/datos/proyectos';
+
+interface Props {
+  proyecto: Proyecto;
+}
+
+const { proyecto } = Astro.props;
+---
+
+<article class="proyecto" data-categorias={proyecto.categorias.join(' ')} data-revelar>
+  <div class="visual">
+    {proyecto.imagen ? (
+      <Image
+        class="medio"
+        src={proyecto.imagen}
+        alt={proyecto.alt ?? ''}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 56rem) 42rem, 100vw"
+        data-parallax="0.06"
+      />
+    ) : (
+      <div
+        class:list={['medio', 'pintura', `tono-${proyecto.tono}`]}
+        data-parallax="0.06"
+        aria-hidden="true"
+      />
+    )}
+    <span class="sello">{proyecto.sello}</span>
+  </div>
+  <div class="pie">
+    <div>
+      <h2>{proyecto.titulo}</h2>
+      <p>{proyecto.descripcion}</p>
+      {proyecto.ejemplo && <SelloEjemplo />}
+    </div>
+    <span class="anio">{proyecto.anio}</span>
+  </div>
+</article>
+
+<script>
+  import { iniciarParallax } from '@/scripts/funciones/parallax';
+  iniciarParallax();
+</script>
+
+<style>
+  .proyecto {
+    overflow: hidden;
+    border: 1px solid var(--linea);
+    border-radius: 24px;
+    background: var(--superficie);
+    transition: border-color var(--medio);
+  }
+
+  .proyecto[hidden] {
+    display: none;
+  }
+
+  .proyecto:hover {
+    border-color: var(--linea-fuerte);
+  }
+
+  .visual {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--tinta-media);
+  }
+
+  .medio {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    translate: 0 var(--desfase, 0);
+    transition: transform 1.2s var(--curva);
+  }
+
+  .proyecto:hover .medio {
+    transform: scale(1.06);
+  }
+
+  .pintura {
+    inset: -14%;
+    width: auto;
+    height: auto;
+    filter: blur(34px) saturate(1.1);
+    opacity: 0.55;
+    transition:
+      opacity var(--medio),
+      transform 1.2s var(--curva);
+  }
+
+  .proyecto:hover .pintura {
+    opacity: 0.8;
+  }
+
+  .tono-1 {
+    background: linear-gradient(130deg, var(--indigo), var(--azul) 55%, var(--cian));
+  }
+  .tono-2 {
+    background: linear-gradient(40deg, var(--azul-profundo), var(--indigo) 60%, var(--azul));
+  }
+  .tono-3 {
+    background: linear-gradient(260deg, var(--azul), var(--cian) 55%, var(--indigo));
+  }
+  .tono-4 {
+    background: linear-gradient(80deg, var(--cian), var(--azul));
+  }
+  .tono-5 {
+    background: linear-gradient(300deg, var(--azul-profundo), var(--indigo) 60%, var(--azul));
+  }
+  .tono-6 {
+    background: linear-gradient(160deg, var(--indigo), var(--cian));
+  }
+
+  /* Fondo casi opaco en lugar de backdrop-filter, que es caro al hacer scroll. */
+  .sello {
+    position: absolute;
+    inset: auto auto 1rem 1rem;
+    z-index: 1;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--linea);
+    border-radius: 100px;
+    background: rgb(4 7 15 / 0.82);
+    font-size: var(--t--1);
+  }
+
+  .pie {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.4rem clamp(1.25rem, 3vw, 2rem) 1.7rem;
+  }
+
+  .pie > div {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  h2 {
+    font-size: var(--t-2);
+  }
+
+  p,
+  .anio {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  .anio {
+    flex: none;
+  }
+</style>

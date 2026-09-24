@@ -1,0 +1,136 @@
+---
+/**
+ * Capítulo 1 · La idea. Partículas dispersas; al bajar, el contenido se
+ * eleva y se desvanece (--p en modo "salida") y la escena toma el relevo.
+ */
+import Boton from '@/components/ui/Boton.astro';
+import Rotulo from '@/components/ui/Rotulo.astro';
+import TituloEnLineas from '@/components/ui/TituloEnLineas.astro';
+---
+
+<section
+  class="heroe"
+  id="inicio"
+  aria-labelledby="titulo-heroe"
+  data-escena="nube"
+  data-progreso="salida"
+>
+  <div class="envoltura contenido">
+    <Rotulo numero="01">Agencia de ecosistemas digitales</Rotulo>
+    <TituloEnLineas
+      nivel="h1"
+      id="titulo-heroe"
+      class="titulo"
+      lineas={['Convertimos ideas', 'en <em>ecosistemas digitales</em>.']}
+    />
+    <div class="fila">
+      <p class="plomo" data-revelar>
+        Diseñamos, construimos y cuidamos la infraestructura digital de tu marca: web, aplicaciones,
+        automatización, marketing, video y branding trabajando como un solo sistema.
+      </p>
+      <div class="acciones" data-revelar>
+        <Boton href="/contacto" variante="solido" magnetico>
+          Empezar un proyecto
+        </Boton>
+        <Boton href="/servicios">Conocer los servicios</Boton>
+      </div>
+    </div>
+  </div>
+  <span class="indicador" aria-hidden="true">
+    Desliza
+  </span>
+</section>
+
+<style>
+  .heroe {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: end;
+    padding-block: 9rem clamp(3rem, 8vh, 6rem);
+  }
+
+  .contenido {
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+  }
+
+  .contenido :global(.titulo) {
+    margin-bottom: 0.5rem;
+    font-size: clamp(2.9rem, 0.9rem + 7.2vw, 7.5rem);
+    line-height: 0.98;
+  }
+
+  .fila {
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+    width: 100%;
+  }
+
+  .acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+  }
+
+  /* Al salir, el contenido se eleva y se desvanece. */
+  :global(.movimiento) .contenido {
+    opacity: calc(1 - var(--p, 0) * 1.6);
+    transform: translate3d(0, calc(var(--p, 0) * -14vh), 0);
+    will-change: transform, opacity;
+  }
+
+  .indicador {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(3rem, 8vh, 6rem);
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    writing-mode: vertical-rl;
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  .indicador::after {
+    content: '';
+    width: 1px;
+    height: 64px;
+    background: linear-gradient(var(--acento), transparent);
+    animation: caer 2.4s var(--curva) infinite;
+  }
+
+  @keyframes caer {
+    0% {
+      transform: scaleY(0);
+      transform-origin: 0 0;
+    }
+    45% {
+      transform: scaleY(1);
+      transform-origin: 0 0;
+    }
+    55% {
+      transform: scaleY(1);
+      transform-origin: 0 100%;
+    }
+    100% {
+      transform: scaleY(0);
+      transform-origin: 0 100%;
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .fila {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  /* Entre 60 y 70rem no hay índice de capítulos: el indicador ocupa su sitio. */
+  @media (min-width: 60rem) and (max-width: 69.99rem) {
+    .indicador {
+      display: flex;
+    }
+  }
+</style>

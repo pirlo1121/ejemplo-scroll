@@ -1,0 +1,22 @@
+---
+/** Sello pequeño que marca una pieza concreta como contenido de ejemplo. */
+---
+
+<span class="sello">
+  <slot>Ejemplo editable</slot>
+</span>
+
+<style>
+  .sello {
+    display: inline-block;
+    justify-self: start;
+    padding: 0.2rem 0.6rem;
+    border: 1px dashed var(--borde-coral);
+    border-radius: 100px;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--coral);
+    background: var(--velo-coral);
+    white-space: nowrap;
+  }
+</style>

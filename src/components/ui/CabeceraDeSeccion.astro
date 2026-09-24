@@ -1,0 +1,32 @@
+---
+/**
+ * Encabezado estándar de una sección: rótulo opcional, titular y, en el
+ * slot, la entradilla o notas de ejemplo.
+ * El titular admite <em> (texto del equipo, por eso set:html).
+ */
+import Rotulo from './Rotulo.astro';
+
+interface Props {
+  id: string;
+  titulo: string;
+  rotulo?: { numero: string; texto: string };
+}
+
+const { id, titulo, rotulo } = Astro.props;
+---
+
+<div class="cabecera">
+  {rotulo && <Rotulo numero={rotulo.numero}>{rotulo.texto}</Rotulo>}
+  <h2 id={id} data-revelar set:html={titulo} />
+  <slot />
+</div>
+
+<style>
+  .cabecera {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    margin-bottom: clamp(2.5rem, 6vw, 5rem);
+    max-width: 54rem;
+  }
+</style>

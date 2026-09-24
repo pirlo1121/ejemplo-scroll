@@ -1,0 +1,82 @@
+---
+/** Capítulo 7 · Lo que dicen los clientes. */
+import CabeceraDeSeccion from '@/components/ui/CabeceraDeSeccion.astro';
+import NotaEjemplo from '@/components/ui/NotaEjemplo.astro';
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import { testimonios } from '@/datos/testimonios';
+
+const hayEjemplos = testimonios.some((testimonio) => testimonio.ejemplo);
+---
+
+<section class="seccion" id="testimonios" aria-labelledby="titulo-testimonios" data-escena="onda">
+  <div class="envoltura">
+    <CabeceraDeSeccion
+      id="titulo-testimonios"
+      titulo="Lo que dicen los clientes"
+      rotulo={{ numero: '07', texto: 'Testimonios' }}
+    >
+      {hayEjemplos && (
+        <NotaEjemplo titulo="Testimonios de ejemplo.">
+          Ninguna de estas citas corresponde a una persona real. Reemplázalas por opiniones
+          autorizadas por escrito, con nombre, cargo y empresa verificables.
+        </NotaEjemplo>
+      )}
+    </CabeceraDeSeccion>
+
+    <div class="testimonios">
+      {testimonios.map(({ cita, autor, ejemplo }) => (
+        <figure class="testimonio" data-revelar>
+          <blockquote>{cita}</blockquote>
+          <figcaption>
+            <span>{autor}</span>
+            {ejemplo && <SelloEjemplo />}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .testimonios {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  .testimonio {
+    display: grid;
+    gap: 1.5rem;
+    align-content: space-between;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border: 1px solid var(--linea);
+    border-radius: 22px;
+    background:
+      radial-gradient(28rem 14rem at 100% 0%, rgb(47 125 255 / 0.14), transparent 70%),
+      rgb(10 17 34 / 0.92);
+  }
+
+  /* Las citas entran desde más abajo que el resto del contenido. */
+  :global(.movimiento) .testimonio:not(.es-visible) {
+    transform: translateY(48px);
+  }
+
+  blockquote {
+    font-family: var(--acento-fuente);
+    font-size: calc(var(--t-1) * 1.15);
+    line-height: 1.35;
+  }
+
+  figcaption {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  @media (min-width: 56rem) {
+    .testimonios {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+/**
+ * Capas fijas sobre toda la página: grano de película, barra de progreso de
+ * lectura y cursor a medida. Todas decorativas (aria-hidden) y sin eventos.
+ * La barra la mueve nucleo/navegacion.ts; el cursor, nucleo/cursor.ts.
+ */
+---
+
+<div class="grano" aria-hidden="true"></div>
+<div class="barra-progreso" data-barra-progreso aria-hidden="true"></div>
+<div class="cursor" data-cursor aria-hidden="true"></div>
+<div class="cursor-halo" data-cursor-halo aria-hidden="true"></div>
+
+<style>
+  .grano {
+    position: fixed;
+    inset: 0;
+    z-index: var(--capa-grano);
+    pointer-events: none;
+    opacity: 0.32;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .barra-progreso {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--capa-progreso);
+    width: 100%;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    background: var(--savia);
+  }
+
+  .cursor,
+  .cursor-halo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--capa-cursor);
+    pointer-events: none;
+    border-radius: 50%;
+    opacity: 0;
+    will-change: transform;
+  }
+
+  .cursor {
+    width: 7px;
+    height: 7px;
+    margin: -3.5px 0 0 -3.5px;
+    background: var(--nube);
+  }
+
+  .cursor-halo {
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 1px solid var(--linea-fuerte);
+    transition:
+      width var(--rapido),
+      height var(--rapido),
+      margin var(--rapido),
+      background-color var(--rapido),
+      border-color var(--rapido);
+  }
+
+  .cursor-halo.es-enlace {
+    width: 76px;
+    height: 76px;
+    margin: -38px 0 0 -38px;
+    background: rgb(90 210 255 / 0.12);
+    border-color: var(--acento);
+  }
+
+  :global(body.cursor-activo) .cursor,
+  :global(body.cursor-activo) .cursor-halo {
+    opacity: 1;
+  }
+
+  :global(body.cursor-activo),
+  :global(body.cursor-activo a),
+  :global(body.cursor-activo button) {
+    cursor: none;
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+/** Icono lineal de cada servicio. Decorativo: el nombre del servicio va al lado. */
+import type { IdServicio } from '@/datos/servicios';
+
+interface Props {
+  servicio: IdServicio;
+}
+
+const TRAZOS: Record<IdServicio, string> = {
+  web: '<path d="M3 7h18M3 12h18M3 17h10"/>',
+  'app-web': '<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 20h8"/>',
+  'app-movil': '<rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/>',
+  automatizacion:
+    '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M6 9v6a3 3 0 0 0 3 3h6"/>',
+  marketing: '<path d="M4 19V9m5 10V5m5 14v-7m5 7V8"/>',
+  video: '<rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 12 6-3.5v11z"/>',
+  branding: '<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>'
+};
+
+const { servicio } = Astro.props;
+---
+
+<span class="icono" aria-hidden="true">
+  <svg viewBox="0 0 24 24" set:html={TRAZOS[servicio]} />
+</span>
+
+<style>
+  .icono {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: rgb(18 28 56 / 0.8);
+    border: 1px solid var(--linea);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--acento);
+    fill: none;
+    stroke-width: 1.5;
+  }
+</style>

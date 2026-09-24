@@ -1,0 +1,52 @@
+---
+/** Capítulo 8 · Cierre. Las partículas se cierran en un anillo. */
+import Boton from '@/components/ui/Boton.astro';
+import Rotulo from '@/components/ui/Rotulo.astro';
+import TituloEnLineas from '@/components/ui/TituloEnLineas.astro';
+---
+
+<section class="llamada" id="llamada" aria-labelledby="titulo-llamada" data-escena="anillo">
+  <div class="envoltura contenido">
+    <Rotulo numero="08">Contacto</Rotulo>
+    <TituloEnLineas
+      id="titulo-llamada"
+      class="titulo"
+      lineas={['Cuéntanos qué', 'quieres <em>construir</em>.']}
+    />
+    <p class="plomo" data-revelar>
+      Escríbenos con el contexto de tu proyecto y te respondemos con una primera lectura y los
+      siguientes pasos, sin compromiso.
+    </p>
+    <p class="accion" data-revelar>
+      <Boton href="/contacto" variante="solido" magnetico>
+        Escribir a JAPH
+      </Boton>
+    </p>
+  </div>
+</section>
+
+<style>
+  .llamada {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-block: clamp(6rem, 14vh, 11rem);
+  }
+
+  .contenido {
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+
+  .contenido :global(.titulo) {
+    font-size: var(--t-5);
+    letter-spacing: -0.05em;
+    line-height: 0.98;
+    max-width: 12ch;
+  }
+
+  .accion {
+    margin-top: 1rem;
+  }
+</style>

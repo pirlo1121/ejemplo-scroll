@@ -1,0 +1,63 @@
+---
+/**
+ * Cinta infinita con los nombres de los servicios. Decorativa (aria-hidden):
+ * la misma información está en la sección de servicios.
+ * Se duplica la pista para que el bucle no tenga costuras.
+ */
+import { servicios } from '@/datos/servicios';
+
+const pistas = [0, 1];
+---
+
+<div class="cinta" aria-hidden="true">
+  {pistas.map(() => (
+    <div class="pista">
+      {servicios.map(({ nombre }) => (
+        <>
+          <span>{nombre}</span>
+          <span>·</span>
+        </>
+      ))}
+    </div>
+  ))}
+</div>
+
+<style>
+  .cinta {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    padding-block: 1.1rem;
+    border-block: 1px solid var(--linea);
+    background: rgb(4 7 15 / 0.55);
+    user-select: none;
+  }
+
+  .pista {
+    display: flex;
+    flex-shrink: 0;
+    gap: 2.5rem;
+    padding-right: 2.5rem;
+    animation: desplazar 38s linear infinite;
+  }
+
+  span {
+    font-family: var(--display);
+    font-size: var(--t-2);
+    letter-spacing: -0.03em;
+    color: var(--texto-suave);
+    white-space: nowrap;
+  }
+
+  @keyframes desplazar {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pista {
+      animation: none;
+    }
+  }
+</style>

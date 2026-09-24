@@ -1,0 +1,82 @@
+---
+/** Capítulo 6 · JAPH en números. */
+import Contador from '@/components/compartidos/Contador.astro';
+import CabeceraDeSeccion from '@/components/ui/CabeceraDeSeccion.astro';
+import NotaEjemplo from '@/components/ui/NotaEjemplo.astro';
+import SelloEjemplo from '@/components/ui/SelloEjemplo.astro';
+import { cifrasPortada } from '@/datos/cifras';
+
+const hayEjemplos = cifrasPortada.some((cifra) => cifra.ejemplo);
+---
+
+<section class="seccion" id="estadisticas" aria-labelledby="titulo-estadisticas" data-escena="onda">
+  <div class="envoltura">
+    <CabeceraDeSeccion
+      id="titulo-estadisticas"
+      titulo="JAPH en números"
+      rotulo={{ numero: '06', texto: 'Números' }}
+    >
+      {hayEjemplos && (
+        <NotaEjemplo titulo="Cifras de ejemplo, no verificadas.">
+          Están puestas para ilustrar el diseño del bloque. Reemplázalas por datos reales y
+          comprobables, o elimina la sección: publicar métricas inventadas puede constituir
+          publicidad engañosa.
+        </NotaEjemplo>
+      )}
+    </CabeceraDeSeccion>
+
+    <div class="cifras">
+      {cifrasPortada.map((cifra) => (
+        <div class="cifra-bloque" data-revelar>
+          <Contador cifra={cifra} class="valor" />
+          <p>{cifra.descripcion}</p>
+          {cifra.ejemplo && <SelloEjemplo />}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .cifras {
+    display: grid;
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--linea);
+    border-radius: 24px;
+    background: var(--linea);
+  }
+
+  .cifra-bloque {
+    display: grid;
+    gap: 0.45rem;
+    align-content: start;
+    padding: clamp(1.6rem, 3.5vw, 2.5rem);
+    background: rgb(6 10 22 / 0.92);
+  }
+
+  .cifra-bloque :global(.valor) {
+    background: var(--savia);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  p {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+    max-width: 24ch;
+  }
+
+  @media (min-width: 40rem) {
+    .cifras {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .cifras {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

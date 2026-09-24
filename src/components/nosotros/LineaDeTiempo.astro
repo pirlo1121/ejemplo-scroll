@@ -1,0 +1,56 @@
+---
+/** Historia del estudio (datos/nosotros.ts → hitos). */
+import { hitos } from '@/datos/nosotros';
+---
+
+<ol class="linea">
+  {hitos.map(({ cuando, titulo, descripcion }) => (
+    <li class="hito" data-revelar>
+      <span class="cuando">{cuando}</span>
+      <h3>{titulo}</h3>
+      <p>{descripcion}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .linea {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+
+  .linea::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 1px;
+    background: linear-gradient(var(--acento), var(--indigo), transparent);
+  }
+
+  .hito {
+    position: relative;
+    padding-block: 1.4rem;
+  }
+
+  .hito::before {
+    content: '';
+    position: absolute;
+    left: -1.75rem;
+    top: 1.95rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--nube);
+  }
+
+  .cuando {
+    font-size: var(--t--1);
+    color: var(--acento);
+  }
+
+  p {
+    color: var(--texto-suave);
+  }
+</style>

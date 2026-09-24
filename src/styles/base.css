@@ -1,0 +1,288 @@
+/* ==========================================================================
+   base.css
+   Reset, tipografía, maquetación compartida, revelados y accesibilidad.
+   Lo que pertenece a un solo componente vive en el <style> de ese .astro.
+
+   Clase de estado en <html> (la pone el script del <head> de Base.astro):
+   - .movimiento  hay JavaScript y no se pidió reducir movimiento. Todo efecto
+                  de scroll se escribe bajo esta clase; sin ella, la página es
+                  un documento estático, completo y legible.
+   ========================================================================== */
+
+/* --- Reset ----------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--alto-cabecera) + 1.5rem);
+}
+
+body {
+  min-height: 100svh;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--texto-fuente);
+  font-size: var(--t-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--indigo);
+  color: var(--tinta);
+}
+
+/* --- Tipografía -------------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--display);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--t-5);
+}
+h2 {
+  font-size: var(--t-4);
+}
+h3 {
+  font-size: var(--t-2);
+}
+h4 {
+  font-size: var(--t-1);
+  letter-spacing: -0.01em;
+}
+
+/* El énfasis de los titulares es serif itálica con el degradado de la marca. */
+h1 em,
+h2 em {
+  font-family: var(--acento-fuente);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  padding-right: 0.04em; /* la itálica no se recorta al final */
+  background: var(--savia);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+p {
+  max-width: 62ch;
+}
+
+.plomo {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+  line-height: 1.5;
+  max-width: 46ch;
+}
+
+.suave {
+  color: var(--texto-suave);
+}
+
+.pequeno {
+  font-size: var(--t--1);
+}
+
+.cifra {
+  font-family: var(--display);
+  font-size: var(--t-3);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.enlace-subrayado {
+  display: inline-block;
+  padding-bottom: 2px;
+  background-image: linear-gradient(var(--acento), var(--acento));
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size var(--medio);
+}
+
+.enlace-subrayado:hover {
+  background-size: 100% 1px;
+}
+
+/* --- Maquetación ------------------------------------------------------------ */
+.envoltura {
+  width: 100%;
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.seccion {
+  position: relative;
+  padding-block: var(--bloque);
+}
+
+/* Portada de las páginas interiores: deja aire para la cabecera fija. */
+.portada-pagina {
+  display: grid;
+  gap: 1.75rem;
+  padding-block: clamp(9rem, 22vh, 14rem) clamp(3rem, 7vh, 5rem);
+}
+
+.portada-pagina h1 {
+  font-size: var(--t-4);
+}
+
+.malla {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+@media (min-width: 52rem) {
+  .malla--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .malla--asimetrica {
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: start;
+  }
+}
+
+.accion-final {
+  margin-top: 3rem;
+}
+
+/* --- Revelados al scroll ------------------------------------------------------
+   Solo se ocultan si hay JavaScript para revelarlos y se permite el
+   movimiento. En cualquier otro caso el contenido se ve desde el principio. */
+:root.movimiento [data-revelar] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.9s var(--curva),
+    transform 0.9s var(--curva);
+  transition-delay: var(--retardo, 0s);
+}
+
+:root.movimiento [data-revelar].es-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Titulares que entran línea a línea (ver TituloEnLineas.astro). */
+.linea-texto {
+  display: block;
+  overflow: hidden;
+  /* Deja sitio a los descendentes (g, p, q) sin recortarlos. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.linea-texto > span {
+  display: block;
+}
+
+:root.movimiento .linea-texto > span {
+  transform: translateY(105%);
+  transition: transform 1s var(--curva);
+}
+
+/* Cada línea entra un poco después que la anterior. */
+:root.movimiento .linea-texto:nth-child(2) > span {
+  transition-delay: 0.11s;
+}
+:root.movimiento .linea-texto:nth-child(3) > span {
+  transition-delay: 0.22s;
+}
+:root.movimiento .linea-texto:nth-child(4) > span {
+  transition-delay: 0.33s;
+}
+
+:root.movimiento .es-visible .linea-texto > span {
+  transform: none;
+}
+
+/* --- Accesibilidad ------------------------------------------------------------ */
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+body.sin-scroll {
+  overflow: hidden;
+}
+
+/* --- Transición entre páginas (sin JavaScript) -------------------------------- */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: var(--curva);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

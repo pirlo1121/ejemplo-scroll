@@ -1,0 +1,172 @@
+---
+/**
+ * Carril horizontal con el detalle de los siete servicios.
+ * - Escritorio con movimiento: el marco queda fijo y el scroll vertical
+ *   desplaza la pista (--p en modo "fija" × --recorrido, ver funciones/carril.ts).
+ * - Móvil o sin movimiento: scroll horizontal nativo con ajuste por tarjeta.
+ */
+import { servicios } from '@/datos/servicios';
+---
+
+<section class="carril" data-carril data-progreso="fija" aria-label="Servicios de JAPH">
+  <div class="marco">
+    <div class="pista" data-carril-pista>
+      {servicios.map((servicio, i) => (
+        <article class="tarjeta" data-brillo>
+          <span class="numero" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <div>
+            <h2>{servicio.nombre}</h2>
+            <p>{servicio.descripcion}</p>
+            <ul>
+              {servicio.incluye.map((punto) => (
+                <li>{punto}</li>
+              ))}
+            </ul>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { iniciarCarril } from '@/scripts/funciones/carril';
+  iniciarCarril();
+</script>
+
+<style>
+  .carril {
+    position: relative;
+  }
+
+  .pista {
+    display: flex;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    padding: 1rem var(--gutter) 2rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    cursor: grab;
+  }
+
+  .pista::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pista.arrastrando {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+
+  .tarjeta {
+    position: relative;
+    flex: 0 0 min(88vw, 27rem);
+    min-height: 27rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: clamp(1.5rem, 3vw, 2.4rem);
+    overflow: hidden;
+    scroll-snap-align: center;
+    border: 1px solid var(--linea);
+    border-radius: 24px;
+    background: linear-gradient(170deg, var(--tinta-media), var(--fondo) 62%);
+    transition:
+      border-color var(--medio),
+      translate var(--medio);
+  }
+
+  /* Halo que sigue al puntero (--mx, --my de nucleo/cursor.ts). */
+  .tarjeta::after {
+    content: '';
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    left: var(--mx, 50%);
+    top: var(--my, 50%);
+    translate: -50% -50%;
+    background: radial-gradient(circle, rgb(47 125 255 / 0.18), transparent 65%);
+    opacity: 0;
+    transition: opacity var(--medio);
+    pointer-events: none;
+  }
+
+  .tarjeta:hover {
+    border-color: var(--linea-fuerte);
+    translate: 0 -8px;
+  }
+
+  .tarjeta:hover::after {
+    opacity: 1;
+  }
+
+  h2 {
+    font-size: var(--t-2);
+  }
+
+  p,
+  li {
+    font-size: var(--t--1);
+    color: var(--texto-suave);
+  }
+
+  ul {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  li {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+
+  li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--acento);
+  }
+
+  .tarjeta:nth-child(even) li::before {
+    background: var(--indigo);
+  }
+
+  .numero {
+    font-family: var(--display);
+    font-size: var(--t-3);
+    line-height: 0.9;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--linea-fuerte);
+  }
+
+  /* Escritorio con movimiento: marco fijo y pista desplazada por el scroll.
+     La media query debe coincidir con ESCRITORIO en funciones/carril.ts. */
+  @media (min-width: 60rem) {
+    :global(.movimiento) .carril {
+      height: calc(100svh + var(--recorrido, 0px));
+    }
+
+    :global(.movimiento) .marco {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    :global(.movimiento) .pista {
+      overflow: visible;
+      transform: translate3d(calc(var(--p, 0) * var(--recorrido, 0px) * -1), 0, 0);
+      will-change: transform;
+    }
+  }
+</style>

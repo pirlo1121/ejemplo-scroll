@@ -1,0 +1,61 @@
+---
+import Planes from '@/components/servicios/Planes.astro';
+import CarrilDeServicios from '@/components/servicios/CarrilDeServicios.astro';
+import Acordeon from '@/components/ui/Acordeon.astro';
+import Boton from '@/components/ui/Boton.astro';
+import CabeceraDeSeccion from '@/components/ui/CabeceraDeSeccion.astro';
+import NotaEjemplo from '@/components/ui/NotaEjemplo.astro';
+import TituloEnLineas from '@/components/ui/TituloEnLineas.astro';
+import Base from '@/layouts/Base.astro';
+import { planes } from '@/datos/planes';
+import { preguntasServicios } from '@/datos/preguntas';
+
+const hayPreciosDeEjemplo = planes.some((plan) => plan.ejemplo);
+---
+
+<Base
+  titulo="Servicios · JAPH"
+  descripcion="Páginas web, apps web y móviles, automatización, marketing digital, producción de video y branding."
+>
+  <section class="envoltura portada-pagina" aria-labelledby="titulo-servicios">
+    <TituloEnLineas
+      nivel="h1"
+      id="titulo-servicios"
+      lineas={['Siete servicios', 'que se necesitan <em>entre sí</em>.']}
+    />
+    <p class="plomo" data-revelar>
+      Cada uno funciona por separado. Juntos forman un sistema donde lo que aprende el marketing
+      cambia el producto, y lo que mide el producto cambia la campaña.
+    </p>
+  </section>
+
+  <CarrilDeServicios />
+
+  <section class="seccion" aria-labelledby="titulo-preguntas">
+    <div class="envoltura">
+      <CabeceraDeSeccion id="titulo-preguntas" titulo="Preguntas antes de contratar" />
+      <Acordeon preguntas={preguntasServicios} />
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-modelos">
+    <div class="envoltura">
+      <CabeceraDeSeccion id="titulo-modelos" titulo="Tres formas de trabajar juntos">
+        {hayPreciosDeEjemplo && (
+          <NotaEjemplo titulo="Precios de ejemplo.">
+            Los valores de esta sección son marcadores de posición. Define tus tarifas reales antes
+            de publicar, o sustituye la cifra por el texto “Según alcance”.
+          </NotaEjemplo>
+        )}
+      </CabeceraDeSeccion>
+
+      <Planes planes={planes} />
+
+      <p class="accion-final" data-revelar>
+        <Boton href="/contacto" variante="solido" magnetico>
+          Pedir una cotización
+        </Boton>
+      </p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,31 @@
+---
+/**
+ * Espacio para una fotografía del estudio o del equipo. Mientras no exista,
+ * es un degradado decorativo con un leve parallax.
+ * Para usar una foto real, reemplaza el <div> por <Image> de astro:assets.
+ */
+---
+
+<div class="retrato" data-parallax="0.05" data-revelar aria-hidden="true"></div>
+
+<script>
+  import { iniciarParallax } from '@/scripts/funciones/parallax';
+  iniciarParallax();
+</script>
+
+<style>
+  .retrato {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid var(--linea);
+    border-radius: 26px;
+    background: conic-gradient(
+      from 210deg at 30% 40%,
+      rgb(90 210 255 / 0.35),
+      rgb(91 107 255 / 0.28),
+      rgb(47 125 255 / 0.24),
+      rgb(90 210 255 / 0.35)
+    );
+    translate: 0 var(--desfase, 0);
+  }
+</style>

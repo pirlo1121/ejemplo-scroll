@@ -1,0 +1,97 @@
+---
+/**
+ * Base.astro
+ * Estructura común de todas las páginas: <head>, capas ambientales,
+ * cabecera, menú móvil, pie de página y el núcleo de scripts.
+ *
+ * Slots:
+ *   default  el contenido de <main>
+ *   fondo    capas fijas detrás del contenido (la escena de la portada)
+ *   fuera    piezas fijas fuera de <main> (el índice de capítulos)
+ */
+import { Font } from 'astro:assets';
+import '@/styles/tokens.css';
+import '@/styles/base.css';
+import CapasAmbientales from '@/components/estructura/CapasAmbientales.astro';
+import Cabecera from '@/components/estructura/Cabecera.astro';
+import MenuMovil from '@/components/estructura/MenuMovil.astro';
+import PieDePagina from '@/components/estructura/PieDePagina.astro';
+import Seo from '@/components/estructura/Seo.astro';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+}
+
+const { titulo, descripcion } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo titulo={titulo} descripcion={descripcion} />
+
+    <!-- Titulares y texto se precargan; la serif de acento llega después. -->
+    <Font cssVariable="--fuente-display" preload />
+    <Font cssVariable="--fuente-texto" preload={[{ weight: 400 }]} />
+    <Font cssVariable="--fuente-acento" />
+
+    <!--
+      Única excepción a "sin scripts en línea": decide ANTES de la primera
+      pintura si se permite el movimiento, para que el diseño no salte.
+      Sin JavaScript o con "reducir movimiento", la clase no existe y la
+      página se muestra como un documento estático.
+    -->
+    <script is:inline>
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('movimiento');
+      }
+    </script>
+  </head>
+  <body>
+    <a class="salta-al-contenido" href="#contenido">
+      Saltar al contenido
+    </a>
+    <CapasAmbientales />
+    <slot name="fondo" />
+
+    <Cabecera />
+    <MenuMovil />
+    <slot name="fuera" />
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <PieDePagina />
+
+    <script>
+      import '@/scripts/nucleo/iniciar';
+    </script>
+  </body>
+</html>
+
+<style>
+  main {
+    position: relative;
+    z-index: var(--capa-contenido);
+  }
+
+  .salta-al-contenido {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: var(--capa-salto);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0 10px 0;
+    background: var(--nube);
+    color: var(--tinta);
+    translate: -110% 0;
+  }
+
+  .salta-al-contenido:focus {
+    translate: 0 0;
+  }
+</style>

@@ -1,0 +1,186 @@
+---
+/**
+ * Capítulo 4 · El proceso. Las partículas forman cuatro capas.
+ * Con movimiento: la línea avanza con el scroll (--p en modo "recorrido"),
+ * la fase actual se ilumina y el contador muestra su número
+ * (scripts/historia/proceso.ts). Sin movimiento, es una lista numerada.
+ */
+import Rotulo from '@/components/ui/Rotulo.astro';
+import { fases } from '@/datos/proceso';
+---
+
+<section class="seccion" id="proceso" aria-labelledby="titulo-proceso" data-escena="rejilla">
+  <div class="envoltura envoltura-proceso">
+    <div class="ancla">
+      <Rotulo numero="04">Proceso</Rotulo>
+      <h2 id="titulo-proceso" data-revelar>
+        Cómo trabajamos
+      </h2>
+      <p class="plomo" data-revelar>
+        Cuatro fases, siempre en el mismo orden. Cada una termina con algo que puedes ver, probar y
+        aprobar.
+      </p>
+      <p class="contador" aria-hidden="true">
+        <span data-proceso-actual>1</span>
+        <span class="total">/ {fases.length}</span>
+      </p>
+    </div>
+
+    <ol class="lista" data-proceso data-progreso="recorrido">
+      {fases.map(({ titulo, descripcion }, i) => (
+        <li class="paso" data-paso data-revelar>
+          <span class="indice" aria-hidden="true">
+            {i + 1}
+          </span>
+          <div>
+            <h3>{titulo}</h3>
+            <p>{descripcion}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<script>
+  import { iniciarProceso } from '@/scripts/historia/proceso';
+  iniciarProceso();
+</script>
+
+<style>
+  .envoltura-proceso {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .ancla {
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+
+  .contador {
+    display: none;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    font-family: var(--acento-fuente);
+    font-style: italic;
+    font-size: clamp(4rem, 9vw, 8rem);
+    line-height: 1;
+    color: var(--acento);
+  }
+
+  .total {
+    font-family: var(--texto-fuente);
+    font-style: normal;
+    font-size: var(--t-0);
+    color: var(--texto-suave);
+  }
+
+  .lista {
+    position: relative;
+  }
+
+  .paso {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 1.25rem;
+    padding-block: clamp(2rem, 5vw, 3.25rem);
+    border-top: 1px solid var(--linea);
+  }
+
+  .paso:first-child {
+    border-top: 0;
+  }
+
+  .indice {
+    font-family: var(--display);
+    font-size: var(--t-1);
+    line-height: 1.1;
+    color: var(--acento);
+  }
+
+  h3 {
+    font-size: var(--t-2);
+  }
+
+  .paso p {
+    margin-top: 0.6rem;
+    color: var(--texto-suave);
+  }
+
+  /* --- Con movimiento: línea de progreso y nodos que se encienden --------- */
+  :global(.movimiento) .lista::before,
+  :global(.movimiento) .lista::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0.55rem;
+    width: 1px;
+  }
+
+  :global(.movimiento) .lista::before {
+    background: var(--linea);
+  }
+
+  :global(.movimiento) .lista::after {
+    background: linear-gradient(var(--indigo), var(--acento));
+    box-shadow: 0 0 12px rgb(90 210 255 / 0.6);
+    transform: scaleY(var(--p, 0));
+    transform-origin: 0 0;
+  }
+
+  :global(.movimiento) .paso {
+    opacity: 0.4;
+    transition: opacity var(--medio);
+  }
+
+  :global(.movimiento) .paso.esta-activo {
+    opacity: 1;
+  }
+
+  /* El número lo muestra el contador grande; aquí cada fase es un nodo. */
+  :global(.movimiento) .indice {
+    position: relative;
+    z-index: 1;
+    align-self: start;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.4rem;
+    border: 1px solid var(--linea-fuerte);
+    border-radius: 50%;
+    background: var(--fondo);
+    font-size: 0;
+    transition:
+      border-color var(--medio),
+      box-shadow var(--medio),
+      background-color var(--medio);
+  }
+
+  :global(.movimiento) .esta-activo .indice {
+    background: var(--acento);
+    border-color: var(--acento);
+    box-shadow:
+      0 0 0 6px rgb(90 210 255 / 0.14),
+      0 0 22px rgb(90 210 255 / 0.6);
+  }
+
+  @media (min-width: 62rem) {
+    .envoltura-proceso {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 5rem;
+    }
+
+    .ancla {
+      position: sticky;
+      top: 18vh;
+      align-self: start;
+    }
+
+    :global(.movimiento) .contador {
+      display: flex;
+    }
+  }
+</style>

@@ -1,0 +1,109 @@
+---
+/**
+ * Índice lateral de la portada (solo pantallas anchas). Cada entrada salta a
+ * su capítulo; el activo lo marca scripts/historia/capitulos.ts.
+ */
+export interface Capitulo {
+  id: string;
+  nombre: string;
+}
+
+interface Props {
+  capitulos: Capitulo[];
+}
+
+const { capitulos } = Astro.props;
+---
+
+<nav class="capitulos" aria-label="Secciones de la portada" data-capitulos>
+  <ol>
+    {capitulos.map(({ id, nombre }) => (
+      <li>
+        <a href={`#${id}`}>
+          <span class="nombre">{nombre}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script>
+  import { iniciarCapitulos } from '@/scripts/historia/capitulos';
+  iniciarCapitulos();
+</script>
+
+<style>
+  .capitulos {
+    position: fixed;
+    right: clamp(1rem, 2.2vw, 2rem);
+    top: 50%;
+    z-index: var(--capa-indice);
+    display: none;
+    translate: 0 -50%;
+    transition:
+      opacity var(--medio),
+      visibility var(--medio);
+  }
+
+  .capitulos.esta-oculto {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  ol {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 0.35rem 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+  }
+
+  a::after {
+    content: '';
+    width: 1.25rem;
+    height: 1px;
+    background: var(--linea-fuerte);
+    transition:
+      width var(--medio),
+      background-color var(--medio);
+  }
+
+  .nombre {
+    opacity: 0;
+    translate: 6px 0;
+    transition:
+      opacity var(--rapido),
+      translate var(--rapido);
+  }
+
+  a:hover .nombre,
+  a:focus-visible .nombre,
+  a[aria-current] .nombre {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  a[aria-current] {
+    color: var(--texto);
+  }
+
+  a[aria-current]::after {
+    width: 2.5rem;
+    background: var(--acento);
+  }
+
+  @media (min-width: 70rem) {
+    .capitulos {
+      display: block;
+    }
+  }
+</style>
