@@ -1,0 +1,18 @@
+{"message":"connected.","label":"vite","level":"info"}
+{"message":"Generated 1ms","label":"types","level":"info"}
+{"message":"connected.","label":"vite","level":"info"}
+{"message":"Re-optimizing dependencies because vite config has changed","label":"vite","level":"info"}
+{"message":" astro  v7.3.4 ready in 429 ms\n┃ Local    http://localhost:4391/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
+{"message":"watching for file changes...","label":null,"level":"info"}
+{"message":"[200] / 53ms","label":null,"level":"info"}
+{"message":"[200] / 63ms","label":null,"level":"info"}
+{"message":"[200] / 53ms","label":null,"level":"info"}
+{"message":"[200] / 41ms","label":null,"level":"info"}
+{"message":"[200] / 14ms","label":null,"level":"info"}
+{"message":"[200] / 43ms","label":null,"level":"info"}
+{"message":"[200] / 68ms","label":null,"level":"info"}
+{"message":"[200] / 47ms","label":null,"level":"info"}
+{"message":"[200] / 41ms","label":null,"level":"info"}
+{"message":"[200] / 16ms","label":null,"level":"info"}
+{"message":"[200] / 17ms","label":null,"level":"info"}
+{"message":"src/components/portada/IndiceDeServicios.astro","label":"watch","level":"info"}
